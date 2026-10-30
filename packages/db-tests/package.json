@@ -1,0 +1,17 @@
+{
+  "name": "@herd/db-tests",
+  "private": true,
+  "type": "module",
+  "description": "Runs the Supabase migrations on a throwaway local Postgres and proves tenant isolation and role rules.",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "@types/pg": "8.23.1",
+    "embedded-postgres": "17.10.0-beta.17",
+    "pg": "8.23.1",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}
