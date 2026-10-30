@@ -23,6 +23,67 @@ export const PEN_TYPE_LABEL: Record<Enums<"pen_type">, string> = {
   other: "Other",
 };
 
+export const STATUS_LABEL: Record<Enums<"animal_status">, string> = {
+  active: "Active",
+  breeding: "Breeding",
+  pregnant: "Pregnant",
+  nursing: "Nursing",
+  growing: "Growing",
+  quarantined: "Quarantined",
+  sold: "Sold",
+  deceased: "Deceased",
+  culled: "Culled",
+};
+
+/** Statuses for animals that have left the herd. */
+export const GONE_STATUSES: Enums<"animal_status">[] = ["sold", "deceased", "culled"];
+
+export const ORIGIN_LABEL: Record<Enums<"animal_origin">, string> = {
+  purchased: "Bought",
+  born_on_farm: "Born on the farm",
+  received: "Received (gift or transfer)",
+  pedigree_only: "Ancestor from records only",
+};
+
+export const CONFIDENCE_LABEL: Record<Enums<"parent_confidence">, string> = {
+  dna: "DNA confirmed",
+  observed: "Seen or documented",
+  reported: "Reported by previous owner",
+  assumed: "Assumed",
+};
+
+export const CONFIDENCE_SHORT: Record<Enums<"parent_confidence">, string> = {
+  dna: "DNA",
+  observed: "seen",
+  reported: "reported",
+  assumed: "assumed",
+};
+
+/** Goat terms; other species will read these from the species table. */
+export const SEX_LABEL: Record<Enums<"animal_sex">, string> = { male: "Buck", female: "Doe" };
+
+export function animalLabel(a: { tag: string | null; name: string | null; registration_number?: string | null }) {
+  if (a.tag && a.name) return `${a.tag} · ${a.name}`;
+  return a.tag ?? a.name ?? a.registration_number ?? "Unnamed animal";
+}
+
+/** "2 yr 3 mo", "5 mo", "3 wk"; prefixed with "about" for estimated dates. */
+export function ageText(birthDate: string | null, estimated: boolean, now = new Date()): string | null {
+  if (!birthDate) return null;
+  const b = new Date(`${birthDate}T00:00:00Z`);
+  const days = Math.floor((now.getTime() - b.getTime()) / 86_400_000);
+  if (days < 0) return null;
+  let text: string;
+  if (days < 56) text = days < 14 ? `${days} day${days === 1 ? "" : "s"}` : `${Math.floor(days / 7)} wk`;
+  else {
+    const months = Math.floor(days / 30.4375);
+    const y = Math.floor(months / 12);
+    const m = months % 12;
+    text = y ? `${y} yr${m ? ` ${m} mo` : ""}` : `${m} mo`;
+  }
+  return estimated ? `about ${text}` : text;
+}
+
 export function initials(name: string | null, email: string | null) {
   const source = (name ?? email ?? "?").trim();
   const parts = source.split(/\s+/).filter(Boolean);

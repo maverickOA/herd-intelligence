@@ -17,6 +17,298 @@ export type Database = {
   }
   public: {
     Tables: {
+      animal_acquisitions: {
+        Row: {
+          acquired_on: string | null
+          animal_id: string
+          created_at: string
+          created_by: string | null
+          currency_code: string | null
+          notes: string | null
+          org_id: string
+          price: number | null
+          row_seq: number
+          source: string | null
+          updated_at: string
+          updated_by: string | null
+          version: number
+        }
+        Insert: {
+          acquired_on?: string | null
+          animal_id: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string | null
+          notes?: string | null
+          org_id: string
+          price?: number | null
+          row_seq?: number
+          source?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Update: {
+          acquired_on?: string | null
+          animal_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string | null
+          notes?: string | null
+          org_id?: string
+          price?: number | null
+          row_seq?: number
+          source?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animal_acquisitions_animal_id_org_id_fkey"
+            columns: ["animal_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id", "org_id"]
+          },
+        ]
+      }
+      animal_events: {
+        Row: {
+          actor: string | null
+          animal_id: string
+          details: Json | null
+          event_type: string
+          id: number
+          occurred_at: string
+          org_id: string
+          summary: string
+        }
+        Insert: {
+          actor?: string | null
+          animal_id: string
+          details?: Json | null
+          event_type: string
+          id?: never
+          occurred_at?: string
+          org_id: string
+          summary: string
+        }
+        Update: {
+          actor?: string | null
+          animal_id?: string
+          details?: Json | null
+          event_type?: string
+          id?: never
+          occurred_at?: string
+          org_id?: string
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animal_events_animal_id_org_id_fkey"
+            columns: ["animal_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id", "org_id"]
+          },
+        ]
+      }
+      animal_parentage: {
+        Row: {
+          child_id: string
+          confidence: Database["public"]["Enums"]["parent_confidence"]
+          created_at: string
+          created_by: string | null
+          ended_at: string | null
+          ended_by: string | null
+          evidence: string | null
+          id: string
+          is_current: boolean
+          org_id: string
+          parent_id: string
+          role: Database["public"]["Enums"]["parent_role"]
+          row_seq: number
+          updated_at: string
+          updated_by: string | null
+          version: number
+        }
+        Insert: {
+          child_id: string
+          confidence?: Database["public"]["Enums"]["parent_confidence"]
+          created_at?: string
+          created_by?: string | null
+          ended_at?: string | null
+          ended_by?: string | null
+          evidence?: string | null
+          id?: string
+          is_current?: boolean
+          org_id: string
+          parent_id: string
+          role: Database["public"]["Enums"]["parent_role"]
+          row_seq?: number
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Update: {
+          child_id?: string
+          confidence?: Database["public"]["Enums"]["parent_confidence"]
+          created_at?: string
+          created_by?: string | null
+          ended_at?: string | null
+          ended_by?: string | null
+          evidence?: string | null
+          id?: string
+          is_current?: boolean
+          org_id?: string
+          parent_id?: string
+          role?: Database["public"]["Enums"]["parent_role"]
+          row_seq?: number
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animal_parentage_child_id_org_id_fkey"
+            columns: ["child_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id", "org_id"]
+          },
+          {
+            foreignKeyName: "animal_parentage_parent_id_org_id_fkey"
+            columns: ["parent_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id", "org_id"]
+          },
+        ]
+      }
+      animals: {
+        Row: {
+          birth_date: string | null
+          birth_date_estimated: boolean
+          breed_id: string | null
+          color: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          farm_id: string | null
+          founder_note: string | null
+          id: string
+          is_declared_founder: boolean
+          markings: string | null
+          name: string | null
+          notes: string | null
+          org_id: string
+          origin: Database["public"]["Enums"]["animal_origin"]
+          pen_id: string | null
+          registration_number: string | null
+          row_seq: number
+          sex: Database["public"]["Enums"]["animal_sex"]
+          species_code: string
+          status: Database["public"]["Enums"]["animal_status"]
+          tag: string | null
+          updated_at: string
+          updated_by: string | null
+          version: number
+        }
+        Insert: {
+          birth_date?: string | null
+          birth_date_estimated?: boolean
+          breed_id?: string | null
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          farm_id?: string | null
+          founder_note?: string | null
+          id?: string
+          is_declared_founder?: boolean
+          markings?: string | null
+          name?: string | null
+          notes?: string | null
+          org_id: string
+          origin: Database["public"]["Enums"]["animal_origin"]
+          pen_id?: string | null
+          registration_number?: string | null
+          row_seq?: number
+          sex: Database["public"]["Enums"]["animal_sex"]
+          species_code?: string
+          status?: Database["public"]["Enums"]["animal_status"]
+          tag?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Update: {
+          birth_date?: string | null
+          birth_date_estimated?: boolean
+          breed_id?: string | null
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          farm_id?: string | null
+          founder_note?: string | null
+          id?: string
+          is_declared_founder?: boolean
+          markings?: string | null
+          name?: string | null
+          notes?: string | null
+          org_id?: string
+          origin?: Database["public"]["Enums"]["animal_origin"]
+          pen_id?: string | null
+          registration_number?: string | null
+          row_seq?: number
+          sex?: Database["public"]["Enums"]["animal_sex"]
+          species_code?: string
+          status?: Database["public"]["Enums"]["animal_status"]
+          tag?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animals_breed_id_fkey"
+            columns: ["breed_id"]
+            isOneToOne: false
+            referencedRelation: "breeds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animals_farm_id_org_id_fkey"
+            columns: ["farm_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "farms"
+            referencedColumns: ["id", "org_id"]
+          },
+          {
+            foreignKeyName: "animals_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animals_pen_id_farm_id_fkey"
+            columns: ["pen_id", "farm_id"]
+            isOneToOne: false
+            referencedRelation: "pens"
+            referencedColumns: ["id", "farm_id"]
+          },
+          {
+            foreignKeyName: "animals_species_code_fkey"
+            columns: ["species_code"]
+            isOneToOne: false
+            referencedRelation: "species"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       audit_log: {
         Row: {
           action: string
@@ -52,6 +344,45 @@ export type Database = {
           table_name?: string
         }
         Relationships: []
+      }
+      breeds: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          org_id: string | null
+          species_code: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          org_id?: string | null
+          species_code: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          org_id?: string | null
+          species_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "breeds_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "breeds_species_code_fkey"
+            columns: ["species_code"]
+            isOneToOne: false
+            referencedRelation: "species"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       farm_assignments: {
         Row: {
@@ -332,6 +663,32 @@ export type Database = {
         }
         Relationships: []
       }
+      pedigree_revisions: {
+        Row: {
+          org_id: string
+          revision: number
+          updated_at: string
+        }
+        Insert: {
+          org_id: string
+          revision?: number
+          updated_at?: string
+        }
+        Update: {
+          org_id?: string
+          revision?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedigree_revisions_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pens: {
         Row: {
           capacity: number | null
@@ -439,6 +796,39 @@ export type Database = {
         }
         Relationships: []
       }
+      species: {
+        Row: {
+          birth_term: string
+          code: string
+          created_at: string
+          female_term: string
+          gestation_days: number
+          male_term: string
+          name: string
+          young_term: string
+        }
+        Insert: {
+          birth_term: string
+          code: string
+          created_at?: string
+          female_term: string
+          gestation_days: number
+          male_term: string
+          name: string
+          young_term: string
+        }
+        Update: {
+          birth_term?: string
+          code?: string
+          created_at?: string
+          female_term?: string
+          gestation_days?: number
+          male_term?: string
+          name?: string
+          young_term?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -459,10 +849,34 @@ export type Database = {
         Args: { p_first_farm_name?: string; p_name: string }
         Returns: string
       }
+      set_parent: {
+        Args: {
+          p_child: string
+          p_confidence?: Database["public"]["Enums"]["parent_confidence"]
+          p_evidence?: string
+          p_parent: string
+          p_role: Database["public"]["Enums"]["parent_role"]
+        }
+        Returns: string
+      }
     }
     Enums: {
+      animal_origin: "born_on_farm" | "purchased" | "received" | "pedigree_only"
+      animal_sex: "male" | "female"
+      animal_status:
+        | "active"
+        | "breeding"
+        | "pregnant"
+        | "nursing"
+        | "growing"
+        | "quarantined"
+        | "sold"
+        | "deceased"
+        | "culled"
       member_role: "owner" | "manager" | "worker" | "vet"
       member_status: "active" | "suspended"
+      parent_confidence: "dna" | "observed" | "reported" | "assumed"
+      parent_role: "sire" | "dam"
       pen_type:
         | "pen"
         | "paddock"
@@ -485,8 +899,23 @@ export type Enums<T extends keyof Database["public"]["Enums"]> =
 export const Constants = {
   public: {
     Enums: {
+      animal_origin: ["born_on_farm", "purchased", "received", "pedigree_only"],
+      animal_sex: ["male", "female"],
+      animal_status: [
+        "active",
+        "breeding",
+        "pregnant",
+        "nursing",
+        "growing",
+        "quarantined",
+        "sold",
+        "deceased",
+        "culled",
+      ],
       member_role: ["owner", "manager", "worker", "vet"],
       member_status: ["active", "suspended"],
+      parent_confidence: ["dna", "observed", "reported", "assumed"],
+      parent_role: ["sire", "dam"],
       pen_type: ["pen", "paddock", "kidding", "quarantine", "pasture", "other"],
     },
   },

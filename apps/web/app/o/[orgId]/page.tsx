@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Circle, Warehouse, Users, LayoutGrid } from "lucide-react";
+import { ArrowRight, CheckCircle2, Circle, PawPrint, Warehouse, Users } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getFarms, getOpenInvitations, getOrgContext, getTeam, isOwner } from "@/lib/data";
+import { countAnimals } from "@/lib/herd";
 import { ROLE_LABEL } from "@/lib/labels";
 
 export const metadata: Metadata = { title: "Home" };
@@ -13,10 +14,11 @@ export default async function OrgHome({ params }: PageProps<"/o/[orgId]">) {
   const { orgId } = await params;
   const ctx = await getOrgContext(orgId);
   const owner = isOwner(ctx);
-  const [farms, team, invitations] = await Promise.all([
+  const [farms, team, invitations, herdSize] = await Promise.all([
     getFarms(orgId),
     getTeam(orgId),
     owner ? getOpenInvitations(orgId) : Promise.resolve([]),
+    countAnimals(orgId),
   ]);
   const penTotal = farms.reduce((n, f) => n + f.penCount, 0);
   const activeMembers = team.filter((m) => m.status === "active").length;
@@ -26,6 +28,7 @@ export default async function OrgHome({ params }: PageProps<"/o/[orgId]">) {
     { done: true, label: "Create your organization", href: `${base}/settings` },
     { done: farms.length > 0, label: "Add your first farm", href: `${base}/farms` },
     { done: penTotal > 0, label: "Add pens to a farm", href: farms[0] ? `${base}/farms/${farms[0].id}` : `${base}/farms` },
+    { done: herdSize > 0, label: "Register your first animal", href: `${base}/herd/new` },
     { done: team.length > 1 || invitations.length > 0, label: "Invite your team", href: `${base}/team` },
   ];
   const remaining = steps.filter((s) => !s.done).length;
@@ -42,8 +45,8 @@ export default async function OrgHome({ params }: PageProps<"/o/[orgId]">) {
       />
 
       <div className="grid grid-cols-3 gap-3">
+        <Stat href={`${base}/herd`} icon={PawPrint} label={herdSize === 1 ? "Animal" : "Animals"} value={herdSize} />
         <Stat href={`${base}/farms`} icon={Warehouse} label={farms.length === 1 ? "Farm" : "Farms"} value={farms.length} />
-        <Stat href={`${base}/farms`} icon={LayoutGrid} label={penTotal === 1 ? "Pen" : "Pens"} value={penTotal} />
         <Stat href={`${base}/team`} icon={Users} label={activeMembers === 1 ? "Person" : "People"} value={activeMembers} />
       </div>
 
@@ -52,7 +55,7 @@ export default async function OrgHome({ params }: PageProps<"/o/[orgId]">) {
           <CardHeader>
             <CardTitle className="text-base">Get set up</CardTitle>
             <CardDescription>
-              {remaining} step{remaining === 1 ? "" : "s"} left before the herd registry arrives.
+              {remaining} step{remaining === 1 ? "" : "s"} left to get your farm running here.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -88,14 +91,15 @@ export default async function OrgHome({ params }: PageProps<"/o/[orgId]">) {
         <CardContent>
           <ol className="grid list-decimal gap-2 pl-5 text-sm">
             <li>
-              <span className="font-medium">Animal registry and pedigrees</span>: QR tags, profiles, family trees, import
-              from a spreadsheet.
-            </li>
-            <li>
-              <span className="font-medium">Breeding checks</span>: inbreeding risk before every mating, kidding records.
+              <span className="font-medium">Breeding checks</span>: inbreeding risk before every mating, ranking bucks
+              for a doe, matings, pregnancy checks and kidding records.
             </li>
             <li>
               <span className="font-medium">Works offline</span>: record in the pen, sync when you have signal.
+            </li>
+            <li>
+              <span className="font-medium">Reports and import</span>: pedigree certificates for buyers, exports, and
+              spreadsheet import.
             </li>
           </ol>
         </CardContent>

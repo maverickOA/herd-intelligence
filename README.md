@@ -9,14 +9,17 @@ Livestock management and breeding intelligence platform. Green Summit Farms is t
 | M2 Pedigree engine | Done: 31 tests, 10,000 random pedigrees cross-checked | `packages/pedigree-engine` |
 | M1 Tenancy and access (database) | Done: 37 security tests; live on Supabase | `supabase/migrations`, `packages/db-tests` |
 | M1 Web app: sign-in, onboarding, farms, pens, team, settings | Done: end-to-end tested against the live project | `apps/web` |
-| Deployment (Vercel) | Next | — |
+| Deployment | Done: Netlify, redeploys on every push to `main` | https://herd-intelligence.netlify.app |
+| M3 Herd registry and pedigrees | Done: 23 database tests, browser-tested | `apps/web/app/o/[orgId]/herd` |
+| M4 Breeding checks, matings, kidding | Next | — |
 
 ## Repository layout
 
 ```
 apps/
   web/               Next.js 16 app (App Router, Supabase SSR auth, shadcn/ui)
-    e2e/smoke.mjs    end-to-end browser test
+    e2e/smoke.mjs    end-to-end browser test (M1)
+    e2e/herd.mjs     end-to-end browser test (M3)
 packages/
   pedigree-engine/   COI, Wright paths, completeness, classification (pure TypeScript)
   db-tests/          runs every migration on a throwaway local Postgres and tests RLS
@@ -47,6 +50,16 @@ No Supabase account or Docker is needed for these: `db-tests` starts its own Pos
 
 **End-to-end:** with the app running (`npm run build -w web && npm start -w web`) and three confirmed accounts in the target project, run `E2E_PASSWORD=... node apps/web/e2e/smoke.mjs`. See the header of that file for options. It covers sign-in, onboarding, pens, farms, invitations, worker restrictions, tenant isolation by URL, pausing and restoring access, and sign-out, on a phone-sized and a desktop screen.
 
+## The herd (M3)
+
+- **Register an animal** as bought, born on the farm, received, or an *ancestor from records only* (from a seller's papers; never on your farm). Only sex is required; tag, name or registration number identify it.
+- **Parents** with how they're known (DNA, seen or documented, reported by previous owner, assumed). Changing a parent keeps the old link as history. "From papers" on a profile adds an ancestor and links it in one step.
+- **Founder flag** for bought stock with no papers: unknown ancestors are treated as unrelated, and breeding checks will say when a result relies on it.
+- **Profile**: details, parents, three-generation family tree with a count of known ancestors, offspring, purchase details (owners and managers only) and an automatic timeline.
+- **QR tags**: printable label per animal. The code holds only a link with the animal's random id; scanning opens the profile after sign-in, and shows "Not found" to anyone without access.
+- **Who can do what**: workers register animals on their farms but can't edit records, set parents or see prices; vets see their farms; records-only ancestors are visible to everyone in the organization.
+- **Enforced by the database**: no animal can be its own ancestor, sires are male and dams female, parents share species and organization, a parent can't be born after its offspring (exact dates), tags are unique per organization, and edits can't break existing links.
+
 ## The web app (M1)
 
 - **Auth:** email and password sign-up with email confirmation, sign-in, password reset, sign-out. Sessions are refreshed in `proxy.ts`; pages check the user with `getClaims()`.
@@ -72,11 +85,11 @@ No Supabase account or Docker is needed for these: `db-tests` starts its own Pos
 - An organization can never lose its last owner. Every change is written to `audit_log`, readable by owners.
 - Every row has `version` and `row_seq` for offline sync, and accepts device-generated UUIDs.
 
-**Migrations:** `tenancy_and_access` (schema), `advisor_fixes` (covering indexes; privileged functions behind public wrappers), `profile_email` (email on profiles for the team list), `paused_member_profiles` (owners still see paused members' names).
+**Migrations:** `tenancy_and_access` (schema), `advisor_fixes` (covering indexes; privileged functions behind public wrappers), `profile_email` (email on profiles for the team list), `paused_member_profiles` (owners still see paused members' names), `herd_registry` (species, breeds, animals, parentage, purchases, timeline), `timeline_wording`.
 
 ## Supabase project
 
-- Project `herd-intelligence` (ref `rqhhhjlcoavcsqtfnbzx`), Postgres 17, region eu-west-1. All four migrations applied; local file names match the remote versions.
+- Project `herd-intelligence` (ref `rqhhhjlcoavcsqtfnbzx`), Postgres 17, region eu-west-1. All migrations applied; local file names match the remote versions.
 - Security advisor: one setting to switch on, leaked-password protection (Authentication settings). Performance advisor: only "unused index" notes.
 
 **Auth settings to set in the dashboard (Authentication → URL Configuration):**

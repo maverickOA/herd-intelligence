@@ -85,6 +85,89 @@ export const profileSchema = z.object({
   phone: optionalText(32),
 });
 
+const blankToNull = z
+  .string()
+  .trim()
+  .transform((v) => (v === "" ? null : v));
+
+const isoDate = z
+  .string()
+  .trim()
+  .transform((v) => (v === "" ? null : v))
+  .refine((v) => v === null || (/^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v))), "Enter a valid date")
+  .refine((v) => v === null || v <= new Date().toISOString().slice(0, 10), "Date cannot be in the future");
+
+const optionalUuid = z
+  .string()
+  .trim()
+  .transform((v) => (v === "" ? null : v))
+  .refine((v) => v === null || /^[0-9a-f-]{36}$/i.test(v), "Invalid choice");
+
+export const animalFields = {
+  tag: blankToNull.refine((v) => v === null || v.length <= 40, "Tag must be at most 40 characters"),
+  name: blankToNull.refine((v) => v === null || v.length <= 80, "Name must be at most 80 characters"),
+  registrationNumber: blankToNull.refine((v) => v === null || v.length <= 60, "Too long"),
+  sex: z.enum(Constants.public.Enums.animal_sex, { error: "Choose buck or doe" }),
+  breedId: optionalUuid,
+  birthDate: isoDate,
+  birthDateEstimated: z.boolean(),
+  color: blankToNull.refine((v) => v === null || v.length <= 60, "Too long"),
+  markings: blankToNull.refine((v) => v === null || v.length <= 200, "Too long"),
+  notes: blankToNull.refine((v) => v === null || v.length <= 2000, "Too long"),
+  isDeclaredFounder: z.boolean(),
+  farmId: optionalUuid,
+  penId: optionalUuid,
+};
+
+export const newAnimalSchema = z
+  .object({
+    orgId: uuid,
+    origin: z.enum(Constants.public.Enums.animal_origin),
+    ...animalFields,
+    status: z.enum(Constants.public.Enums.animal_status),
+    sireId: optionalUuid,
+    damId: optionalUuid,
+    parentConfidence: z.enum(Constants.public.Enums.parent_confidence),
+    acquiredOn: isoDate,
+    source: blankToNull.refine((v) => v === null || v.length <= 120, "Too long"),
+    price: blankToNull.refine((v) => v === null || (/^\d{1,12}(\.\d{1,2})?$/.test(v.replace(/,/g, ""))), "Enter an amount, e.g. 85000"),
+    childOf: optionalUuid,
+    childRole: z.enum(["", ...Constants.public.Enums.parent_role]),
+  })
+  .refine((v) => v.tag || v.name || v.registrationNumber, { path: ["tag"], message: "Give at least a tag, a name or a registration number" })
+  .refine((v) => v.origin === "pedigree_only" || v.farmId, { path: ["farmId"], message: "Choose the farm" })
+  .refine((v) => !v.birthDateEstimated || v.birthDate, { path: ["birthDate"], message: "Enter the estimated date" });
+
+export const editAnimalSchema = z
+  .object({
+    orgId: uuid,
+    animalId: uuid,
+    isRecordOnly: z.boolean(),
+    ...animalFields,
+    status: z.enum(Constants.public.Enums.animal_status),
+  })
+  .refine((v) => v.tag || v.name || v.registrationNumber, { path: ["tag"], message: "Give at least a tag, a name or a registration number" })
+  .refine((v) => v.isRecordOnly || v.farmId, { path: ["farmId"], message: "Choose the farm" })
+  .refine((v) => !v.birthDateEstimated || v.birthDate, { path: ["birthDate"], message: "Enter the estimated date" });
+
+export const setParentSchema = z.object({
+  orgId: uuid,
+  childId: uuid,
+  role: z.enum(Constants.public.Enums.parent_role),
+  parentId: optionalUuid,
+  confidence: z.enum(Constants.public.Enums.parent_confidence),
+  evidence: blankToNull.refine((v) => v === null || v.length <= 300, "Too long"),
+});
+
+export const acquisitionSchema = z.object({
+  orgId: uuid,
+  animalId: uuid,
+  acquiredOn: isoDate,
+  source: blankToNull.refine((v) => v === null || v.length <= 120, "Too long"),
+  price: blankToNull.refine((v) => v === null || (/^\d{1,12}(\.\d{1,2})?$/.test(v.replace(/,/g, ""))), "Enter an amount, e.g. 85000"),
+  notes: blankToNull.refine((v) => v === null || v.length <= 500, "Too long"),
+});
+
 export type FieldErrors = Record<string, string[] | undefined>;
 
 export function fieldErrors(error: z.ZodError): FieldErrors {

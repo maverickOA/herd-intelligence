@@ -70,7 +70,7 @@ export default async function FarmPage({ params }: PageProps<"/o/[orgId]/farms/[
         </h2>
         <Card>
           {manage ? (
-            <CardContent className="pt-6">
+            <CardContent>
               <FarmDetailsForm orgId={orgId} farm={farm} />
             </CardContent>
           ) : (

@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Settings, Users, Warehouse } from "lucide-react";
+import { Home, PawPrint, Settings, Users, Warehouse } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /*
- * Only screens that work today appear here. Herd, Breeding and Tasks join the
- * bar as those milestones ship, so there are never dead buttons.
+ * Only screens that work today appear here. Breeding and Tasks join the bar
+ * as those milestones ship, so there are never dead buttons.
  */
 function items(orgId: string) {
   const base = `/o/${orgId}`;
   return [
     { href: base, label: "Home", icon: Home, exact: true },
+    { href: `${base}/herd`, label: "Herd", icon: PawPrint },
     { href: `${base}/farms`, label: "Farms", icon: Warehouse },
     { href: `${base}/team`, label: "Team", icon: Users },
     { href: `${base}/settings`, label: "Settings", icon: Settings },
@@ -58,7 +59,7 @@ export function BottomNav({ orgId }: { orgId: string }) {
       aria-label="Main"
       className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
     >
-      <ul className="mx-auto grid max-w-md grid-cols-4">
+      <ul className="mx-auto grid max-w-md grid-cols-5">
         {items(orgId).map(({ href, label, icon: Icon, exact }) => {
           const active = isActive(href, exact);
           return (
