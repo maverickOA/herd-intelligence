@@ -305,20 +305,31 @@ describe('Database hygiene', () => {
     expect(r.rows).toEqual([]);
   });
 
-  it('every foreign key column is indexed', async () => {
+  it('every foreign key is fully covered by an index (all its columns, leading)', async () => {
+    // Same rule as Supabase's "unindexed foreign keys" advisor, including composite keys.
     const r = await db.admin.query(`
-      select conrelid::regclass::text as tbl, a.attname as col
+      select c.conname
         from pg_constraint c
-        join pg_attribute a on a.attrelid = c.conrelid and a.attnum = c.conkey[1]
        where c.contype = 'f' and c.connamespace = 'public'::regnamespace
-         and not exists (select 1 from pg_index i where i.indrelid = c.conrelid and i.indkey[0] = c.conkey[1])`);
+         and not exists (
+           select 1 from pg_index i
+            where i.indrelid = c.conrelid
+              and (select array_agg(k order by k) from unnest((i.indkey::int2[])[0:cardinality(c.conkey) - 1]) k)
+                = (select array_agg(k order by k) from unnest(c.conkey) k))`);
     expect(r.rows).toEqual([]);
   });
 
-  it('no SECURITY DEFINER function in public is executable by anon', async () => {
+  it('no SECURITY DEFINER function lives in the exposed public schema', async () => {
     const r = await db.admin.query(`
       select p.proname from pg_proc p
-       where p.pronamespace = 'public'::regnamespace and p.prosecdef
+       where p.pronamespace = 'public'::regnamespace and p.prosecdef`);
+    expect(r.rows).toEqual([]);
+  });
+
+  it('privileged app functions are not callable by anonymous users', async () => {
+    const r = await db.admin.query(`
+      select p.proname from pg_proc p
+       where p.pronamespace = 'app'::regnamespace and p.prosecdef
          and has_function_privilege('anon', p.oid, 'execute')`);
     expect(r.rows).toEqual([]);
   });

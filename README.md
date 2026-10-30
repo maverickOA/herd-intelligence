@@ -7,8 +7,8 @@ Livestock management and breeding intelligence platform. Green Summit Farms is t
 | Milestone | Status | Where |
 | --- | --- | --- |
 | M2 Pedigree engine | Done: 31 tests, 10,000 random pedigrees cross-checked | `packages/pedigree-engine` |
-| M1 Tenancy and access (database) | Done: 35 security tests on Postgres 17 | `supabase/migrations`, `packages/db-tests` |
-| M1 Sign-in and onboarding screens | Next: needs the Supabase project | — |
+| M1 Tenancy and access (database) | Done: 36 security tests; live on Supabase; advisors clean | `supabase/migrations`, `packages/db-tests` |
+| M1 Sign-in and onboarding screens | Next | — |
 
 ## Repository layout
 
@@ -25,7 +25,7 @@ supabase/
 
 ```bash
 npm install
-npm test             # both suites
+npm test             # both suites (also run by GitHub Actions on every push)
 npm run test:engine  # pedigree engine only
 npm run test:db      # database security only (downloads a local Postgres 17 the first time)
 ```
@@ -47,14 +47,17 @@ No Supabase account or Docker is needed for the tests: `db-tests` starts its own
 - An organization can never lose its last owner. Every change is written to `audit_log`, readable by owners.
 - Every row has `version` and `row_seq` for offline sync, and accepts device-generated UUIDs.
 
+**Two migrations:** `tenancy_and_access` (the schema) and `advisor_fixes` (covering indexes for the composite tenant keys; privileged functions moved to the private `app` schema behind public wrappers).
+
 **What the tests prove:** another organization's rows can't be read, changed or created by id; workers, vets and managers see only their farms; workers can't promote themselves; suspended members lose access at once; invitations work only for the right email, once, before expiry; anonymous callers see nothing. Four deliberate security bugs were introduced during development and each was caught.
 
-## Connecting to Supabase (when the project exists)
+## Supabase project
 
-1. Create a Supabase project (region nearest Nigeria, Postgres 17) and note its project ref.
-2. Install the CLI: `npm install -D supabase` (or use `npx supabase`).
-3. `npx supabase login`, then `npx supabase link --project-ref <ref>`.
-4. `npx supabase db push` applies the migrations.
-5. In the dashboard, run the security and performance advisors and confirm they are clean.
+- Project `herd-intelligence` (ref `rqhhhjlcoavcsqtfnbzx`), Postgres 17, region eu-west-1.
+- Both migrations are applied; local file names match the remote migration versions.
+- Security advisor: no findings. Performance advisor: only "unused index" notes, expected while the database is empty.
+- A live isolation check (two throwaway users in a rolled-back transaction) confirmed profiles are created at sign-up, one organization cannot see or write into another, and anonymous requests are refused.
+
+To work with it from your own computer: `npx supabase login`, `npx supabase link --project-ref rqhhhjlcoavcsqtfnbzx`, then `npx supabase db push` for new migrations.
 
 Keep the service-role key out of the browser and out of Git; only the publishable key goes in `NEXT_PUBLIC_*` variables.
