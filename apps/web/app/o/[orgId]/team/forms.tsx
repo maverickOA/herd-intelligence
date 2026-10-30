@@ -183,7 +183,7 @@ export function MemberCard({
   const name = member.fullName ?? member.email ?? "Unnamed member";
 
   return (
-    <li className="rounded-xl border bg-card">
+    <li className="min-w-0 rounded-xl border bg-card">
       <div className="flex items-start gap-3 p-4">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary">
           {initials(member.fullName, member.email)}

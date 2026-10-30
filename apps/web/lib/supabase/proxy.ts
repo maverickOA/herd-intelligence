@@ -37,8 +37,11 @@ export async function updateSession(request: NextRequest) {
 
   // Do not run code between createServerClient and getClaims(): getClaims
   // refreshes the token, and anything in between can sign users out at random.
-  const { data } = await supabase.auth.getClaims();
+  const { data, error } = await supabase.auth.getClaims();
   const signedIn = !!data?.claims;
+  if (error && request.cookies.getAll().some((c) => c.name.startsWith("sb-"))) {
+    console.error(`[proxy] getClaims failed for ${request.nextUrl.pathname}: ${error.name}: ${error.message}`);
+  }
 
   const { pathname, search } = request.nextUrl;
   if (!signedIn && !isPublic(pathname)) {

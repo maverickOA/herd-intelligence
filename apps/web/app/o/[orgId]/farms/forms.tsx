@@ -115,7 +115,7 @@ export function PenRow({
 
   if (editing) {
     return (
-      <li className="rounded-xl border bg-card p-4">
+      <li className="min-w-0 rounded-xl border bg-card p-4">
         <ActionForm
           action={updatePen}
           hidden={{ orgId, farmId, penId: pen.id }}
@@ -141,7 +141,7 @@ export function PenRow({
   }
 
   return (
-    <li className="flex items-center gap-3 rounded-xl border bg-card p-4">
+    <li className="flex min-w-0 items-center gap-3 rounded-xl border bg-card p-4">
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium">{pen.name}</p>
         <p className="text-sm text-muted-foreground">

@@ -41,7 +41,7 @@ export default async function TeamPage({ params }: PageProps<"/o/[orgId]/team">)
           </h2>
           <ul className="grid gap-2">
             {invitations.map((inv) => (
-              <li key={inv.id} className="flex items-center gap-3 rounded-xl border bg-card p-4">
+              <li key={inv.id} className="flex min-w-0 items-center gap-3 rounded-xl border bg-card p-4">
                 <Clock className="size-4 shrink-0 text-muted-foreground" aria-hidden />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">{inv.email}</p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { initialState, type ActionState } from "@/lib/action-state";
 
@@ -8,6 +8,8 @@ type Action = (prev: ActionState, formData: FormData) => Promise<ActionState>;
 
 /**
  * A form wired to a Server Action that reports success and failure as a toast.
+ * The toast fires as soon as the action resolves, so it still shows when the
+ * form itself disappears afterwards (e.g. archiving the row it sits in).
  * Hidden inputs carry ids; the database still re-checks permission.
  */
 export function ActionForm({
@@ -26,16 +28,22 @@ export function ActionForm({
   confirm?: string;
   onDone?: (state: ActionState) => void;
 }) {
-  const [state, formAction] = useActionState(action, initialState);
-  const last = useRef<ActionState>(initialState);
-
+  const onDoneRef = useRef(onDone);
   useEffect(() => {
-    if (state === last.current) return;
-    last.current = state;
-    if (state.error) toast.error(state.error);
-    else if (state.ok && state.message) toast.success(state.message);
-    if (state.ok) onDone?.(state);
-  }, [state, onDone]);
+    onDoneRef.current = onDone;
+  });
+
+  const withFeedback = useCallback(
+    async (prev: ActionState, formData: FormData) => {
+      const result = await action(prev, formData);
+      if (result.error) toast.error(result.error);
+      else if (result.ok && result.message) toast.success(result.message);
+      if (result.ok) onDoneRef.current?.(result);
+      return result;
+    },
+    [action],
+  );
+  const [state, formAction] = useActionState(withFeedback, initialState);
 
   return (
     <form

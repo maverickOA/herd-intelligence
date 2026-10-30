@@ -192,6 +192,11 @@ describe('Roles inside one organization', () => {
     await as(db, alice, `update public.memberships set status = 'suspended' where user_id = $1 and org_id = $2`, [vic.id, orgA]);
     expect((await as(db, vic, `select * from public.farms`)).rowCount).toBe(0);
     expect((await as(db, vic, `select * from public.organizations`)).rowCount).toBe(0);
+    // The owner still sees who the paused person is, to decide whether to restore them.
+    const seen = await as(db, alice, `select full_name, email from public.profiles where id = $1`, [vic.id]);
+    expect(seen.rows[0]).toEqual({ full_name: 'Vic Vet', email: 'vic@vets.test' });
+    // But the paused person no longer sees their former teammates.
+    expect((await as(db, vic, `select * from public.profiles where id = $1`, [alice.id])).rowCount).toBe(0);
     await as(db, alice, `update public.memberships set status = 'active' where user_id = $1 and org_id = $2`, [vic.id, orgA]);
     expect((await as(db, vic, `select * from public.farms`)).rowCount).toBe(1);
   });

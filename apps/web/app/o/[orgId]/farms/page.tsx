@@ -32,7 +32,7 @@ export default async function FarmsPage({ params }: PageProps<"/o/[orgId]/farms"
       ) : (
         <ul className="grid gap-3">
           {farms.map((f) => (
-            <li key={f.id}>
+            <li key={f.id} className="min-w-0">
               <Link
                 href={`/o/${orgId}/farms/${f.id}`}
                 className="flex items-center gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-accent"
