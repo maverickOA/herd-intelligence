@@ -1,10 +1,16 @@
 {
   "name": "herd-intelligence",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "test": "npm run test --workspaces --if-present",
     "test:engine": "npm test -w @herd/pedigree-engine",
-    "test:db": "npm test -w @herd/db-tests"
+    "test:db": "npm test -w @herd/db-tests",
+    "dev": "npm run dev -w web",
+    "build": "npm run build -w web",
+    "lint": "npm run lint -w web"
   }
 }

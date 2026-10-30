@@ -54,9 +54,17 @@ describe('Creating an organization', () => {
     expect(await denied(db, null, `select public.create_organization('Anon farm')`)).toMatch(/permission denied/);
   });
 
-  it('creates a profile automatically at sign-up', async () => {
-    const r = await as(db, alice, `select full_name from public.profiles where id = $1`, [alice.id]);
-    expect(r.rows[0].full_name).toBe('Alice Owner');
+  it('creates a profile automatically at sign-up, with the email', async () => {
+    const r = await as(db, alice, `select full_name, email from public.profiles where id = $1`, [alice.id]);
+    expect(r.rows[0]).toEqual({ full_name: 'Alice Owner', email: 'alice@greensummit.test' });
+  });
+
+  it('keeps the profile email in sync, and clients cannot edit it', async () => {
+    const temp = await signUp(db, 'old-address@farm.test');
+    await db.admin.query(`update auth.users set email = 'new-address@farm.test' where id = $1`, [temp.id]);
+    const r = await as(db, temp, `select email from public.profiles where id = $1`, [temp.id]);
+    expect(r.rows[0].email).toBe('new-address@farm.test');
+    expect(await denied(db, temp, `update public.profiles set email = 'spoof@x.test' where id = $1`, [temp.id])).toMatch(/permission denied/);
   });
 });
 

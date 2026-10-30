@@ -20,3 +20,13 @@ jobs:
         run: npm run test:engine
       - name: Database security (local Postgres 17)
         run: npm run test:db
+      - name: Web app lint, types and build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: |
+          npm run lint -w web
+          npx -w web next typegen
+          npm run typecheck -w web
+          npm run build -w web
