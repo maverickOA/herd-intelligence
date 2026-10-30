@@ -1,0 +1,21 @@
+{
+  "name": "@herd/pedigree-engine",
+  "version": "1.0.0",
+  "description": "Herd Intelligence pedigree and breeding engine: exact known-pedigree COI, Wright path explanation, completeness and classification.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^3.0.0"
+  }
+}
