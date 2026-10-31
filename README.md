@@ -11,7 +11,8 @@ Livestock management and breeding intelligence platform. Green Summit Farms is t
 | M1 Web app: sign-in, onboarding, farms, pens, team, settings | Done: end-to-end tested against the live project | `apps/web` |
 | Deployment | Done: Netlify, redeploys on every push to `main` | https://herd-intelligence.netlify.app |
 | M3 Herd registry and pedigrees | Done: 23 database tests, browser-tested | `apps/web/app/o/[orgId]/herd` |
-| M4 Breeding checks, matings, kidding | Next | — |
+| M4 Breeding checks, matings, pregnancy checks, kidding | Done: 27 database tests, browser-tested; engine runs in a Supabase Edge Function | `apps/web/app/o/[orgId]/breeding`, `packages/breeding-service`, `supabase/functions/breeding` |
+| M5 Offline use and sync | Next | — |
 
 ## Repository layout
 
@@ -20,12 +21,15 @@ apps/
   web/               Next.js 16 app (App Router, Supabase SSR auth, shadcn/ui)
     e2e/smoke.mjs    end-to-end browser test (M1)
     e2e/herd.mjs     end-to-end browser test (M3)
+    e2e/breeding.mjs end-to-end browser test (M4)
 packages/
   pedigree-engine/   COI, Wright paths, completeness, classification (pure TypeScript)
+  breeding-service/  runs the engine on the database's pedigree snapshot; bundled into the Edge Function
   db-tests/          runs every migration on a throwaway local Postgres and tests RLS
 supabase/
   config.toml        Supabase CLI project config (Postgres 17)
   migrations/        schema, Row Level Security, RPCs
+  functions/breeding Edge Function: the only writer of breeding assessments
 ```
 
 ## Run the app locally
@@ -41,14 +45,29 @@ The publishable key is safe in the browser. Never put the service-role or secret
 ## Run the tests
 
 ```bash
-npm test             # engine + database (GitHub Actions also lints, type-checks and builds the web app)
+npm test             # engine + breeding service + database (GitHub Actions also lints, type-checks and builds the web app)
 npm run test:engine  # pedigree engine only
+npm run test:breeding  # breeding service only
 npm run test:db      # database security only (downloads a local Postgres 17 the first time)
 ```
 
 No Supabase account or Docker is needed for these: `db-tests` starts its own Postgres and applies a small stand-in for Supabase's `auth` schema (`packages/db-tests/sql/local-supabase-shim.sql`).
 
 **End-to-end:** with the app running (`npm run build -w web && npm start -w web`) and three confirmed accounts in the target project, run `E2E_PASSWORD=... node apps/web/e2e/smoke.mjs`. See the header of that file for options. It covers sign-in, onboarding, pens, farms, invitations, worker restrictions, tenant isolation by URL, pausing and restoring access, and sign-out, on a phone-sized and a desktop screen.
+
+## Breeding (M4)
+
+- **Check a pairing:** expected kid COI from every recorded ancestor (exact fraction), the same figure using only DNA-confirmed or seen parent links, the worst case when a sire is uncertain, pedigree completeness, the named relationship, each shared ancestor and path, and what the check can't see. Results read *Low known pedigree risk*, *Elevated*, *Insufficient pedigree information*, *High* or *Restricted by farm breeding policy*, never "safe". Missing pedigree is never rated low.
+- **Full ancestry, even across farms:** the database hands the engine every ancestor, including those on farms the user can't see, so hidden relatives still count. Those animals appear only as "an animal on a farm you can't see".
+- **Can't be forged:** checks run in the Supabase Edge Function `breeding`, which alone can write `breeding_assessments`. A database trigger re-checks every stored result against the policy, and stored checks can't be edited.
+- **Best bucks for a doe:** every eligible buck the user can see, ranked low → restricted, then by COI and completeness.
+- **Record a mating:** step 1 runs a fresh check for each buck, step 2 records it. The database requires a check by the same person against the current pedigree and policy. Restricted pairings need an owner or the farm's manager and a written reason (kept with the check). High risk or not-enough-pedigree results need the warning acknowledged. Several bucks running with a doe = uncertain father.
+- **Pregnancy checks** (scan, blood test, observation) with an optional due date from the scan; otherwise the due window is mating date + 150 days, always shown as an estimate.
+- **Kidding:** singles to octuplets, stillborn kids counted. Live kids are registered on the doe's farm and pen with dam and sire linked, or with all the bucks as *possible sires* when the father is uncertain. Recording the sire later settles it.
+- **Breeding policy:** owners set the thresholds, blocked relationships and the founder assumption, and record the advisor who confirmed them. Changing a threshold clears the confirmation. Defaults (low < 3.125%, high ≥ 6.25%, restricted ≥ 12.5% or parent–offspring / full / half siblings, completeness ≥ 70% over 3 generations) are starting values for a qualified breeding advisor to confirm.
+- **Who can do what:** anyone can check a pairing; owners and assigned managers, workers and vets record matings, checks and kiddings on their farms; only owners change the policy.
+
+**Deploying the Edge Function.** After changing the engine or `packages/breeding-service`, run `npm run bundle:breeding` and commit `supabase/functions/breeding/core.bundle.js` (CI fails if it is stale). Deploy with `npx supabase functions deploy breeding --no-verify-jwt` (the function checks the session itself). The live copy imports the bundle from its pinned Git commit through jsDelivr, so it is byte-for-byte the tested file.
 
 ## The herd (M3)
 
@@ -67,7 +86,7 @@ No Supabase account or Docker is needed for these: `db-tests` starts its own Pos
 - **Farms and pens:** owners add farms; owners and assigned managers edit farm details and add, edit and archive pens.
 - **Team:** owners invite by email and role, choose farm access, and get a one-time link to share by WhatsApp, SMS or email. Owners change roles and farm access, pause or restore access, and remove people; anyone can leave.
 - **Settings:** your name and phone; organization name, country, currency and time zone (owners).
-- **Navigation:** bottom tabs on phones, sidebar on desktop. Only working screens appear; Herd, Breeding and Tasks join as those milestones ship.
+- **Navigation:** bottom tabs on phones, sidebar on desktop. Only working screens appear; Tasks joins when that milestone ships.
 - Every action runs as the signed-in user, so the database's Row Level Security has the final say. Cache Components is off on purpose so tenant data is never cached on the server.
 
 ## The M1 database
@@ -85,7 +104,7 @@ No Supabase account or Docker is needed for these: `db-tests` starts its own Pos
 - An organization can never lose its last owner. Every change is written to `audit_log`, readable by owners.
 - Every row has `version` and `row_seq` for offline sync, and accepts device-generated UUIDs.
 
-**Migrations:** `tenancy_and_access` (schema), `advisor_fixes` (covering indexes; privileged functions behind public wrappers), `profile_email` (email on profiles for the team list), `paused_member_profiles` (owners still see paused members' names), `herd_registry` (species, breeds, animals, parentage, purchases, timeline), `timeline_wording`.
+**Migrations:** `tenancy_and_access` (schema), `advisor_fixes` (covering indexes; privileged functions behind public wrappers), `profile_email` (email on profiles for the team list), `paused_member_profiles` (owners still see paused members' names), `herd_registry` (species, breeds, animals, parentage, purchases, timeline), `timeline_wording`, `breeding` (policy, assessments, overrides, matings, pregnancy checks, kiddings, candidate sires).
 
 ## Supabase project
 
