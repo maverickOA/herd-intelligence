@@ -11,6 +11,8 @@
     "test:db": "npm test -w @herd/db-tests",
     "dev": "npm run dev -w web",
     "build": "npm run build -w web",
-    "lint": "npm run lint -w web"
+    "lint": "npm run lint -w web",
+    "test:breeding": "npm test -w @herd/breeding-service",
+    "bundle:breeding": "npm run bundle -w @herd/breeding-service"
   }
 }

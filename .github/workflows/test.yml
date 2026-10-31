@@ -18,6 +18,11 @@ jobs:
       - run: npm ci
       - name: Pedigree engine
         run: npm run test:engine
+      - name: Breeding service, and the Edge Function bundle is up to date
+        run: |
+          npm test -w @herd/breeding-service
+          npm run bundle -w @herd/breeding-service
+          git diff --exit-code supabase/functions/breeding/core.bundle.js
       - name: Database security (local Postgres 17)
         run: npm run test:db
       - name: Web app lint, types and build

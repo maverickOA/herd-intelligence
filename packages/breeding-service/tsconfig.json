@@ -1,0 +1,5 @@
+{
+  "extends": "../pedigree-engine/tsconfig.json",
+  "compilerOptions": { "noEmit": true, "rootDir": ".." },
+  "include": ["src", "test"]
+}
