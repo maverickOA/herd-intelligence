@@ -10,5 +10,5 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const params = await searchParams;
   const next = safeNext(typeof params.next === "string" ? params.next : null);
   if (await getCurrentUser()) redirect(next);
-  return <LoginForm next={next} />;
+  return <LoginForm next={next} confirmed={params.confirmed === "1"} />;
 }

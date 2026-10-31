@@ -3,18 +3,21 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { Field, FormMessage, SubmitButton } from "@/components/forms";
+import { ResendConfirmation } from "@/components/auth/resend-confirmation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { initialState } from "@/lib/action-state";
 import { signIn } from "../actions";
 
-export function LoginForm({ next }: { next: string }) {
+export function LoginForm({ next, confirmed }: { next: string; confirmed?: boolean }) {
   const [state, action] = useActionState(signIn, initialState);
   const qs = next !== "/" ? `?next=${encodeURIComponent(next)}` : "";
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-xl">Sign in</CardTitle>
-        <CardDescription>Welcome back. Use the email you signed up with.</CardDescription>
+        <CardDescription>
+          {confirmed ? "Your email is confirmed. Sign in to continue." : "Welcome back. Use the email you signed up with."}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form action={action} className="grid gap-4" noValidate>
@@ -26,6 +29,11 @@ export function LoginForm({ next }: { next: string }) {
             Sign in
           </SubmitButton>
         </form>
+        {state.data?.unconfirmed && (
+          <div className="mt-4">
+            <ResendConfirmation email={state.data.unconfirmed} next={next} />
+          </div>
+        )}
         <div className="mt-6 flex flex-col gap-2 text-center text-sm">
           <Link href={`/forgot-password${qs}`} className="text-muted-foreground underline-offset-4 hover:underline">
             Forgot your password?

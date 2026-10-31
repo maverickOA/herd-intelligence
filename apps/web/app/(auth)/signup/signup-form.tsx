@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { MailCheck } from "lucide-react";
 import { Field, FormMessage, SubmitButton } from "@/components/forms";
+import { ResendConfirmation } from "@/components/auth/resend-confirmation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { initialState } from "@/lib/action-state";
 import { signUp } from "../actions";
@@ -20,8 +21,12 @@ export function SignupForm({ next, invited }: { next: string; invited: boolean }
           <CardTitle className="text-xl">Check your email</CardTitle>
           <CardDescription>{state.message}</CardDescription>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground">
-          Can&apos;t find it? Look in spam or promotions. The link expires after 24 hours.
+        <CardContent className="grid gap-4">
+          <p className="text-sm text-muted-foreground">
+            When you open it, you&apos;ll see a page saying your email is confirmed. Can&apos;t find the email? Look in spam or
+            promotions. The link expires after 24 hours.
+          </p>
+          <ResendConfirmation email={state.values?.email} next={next} label="Didn't get it? Send it again" />
         </CardContent>
       </Card>
     );
