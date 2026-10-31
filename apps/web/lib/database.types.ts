@@ -73,6 +73,48 @@ export type Database = {
           },
         ]
       }
+      animal_candidate_sires: {
+        Row: {
+          child_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          org_id: string
+          sire_id: string
+        }
+        Insert: {
+          child_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          org_id: string
+          sire_id: string
+        }
+        Update: {
+          child_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          org_id?: string
+          sire_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animal_candidate_sires_child_id_org_id_fkey"
+            columns: ["child_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id", "org_id"]
+          },
+          {
+            foreignKeyName: "animal_candidate_sires_sire_id_org_id_fkey"
+            columns: ["sire_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id", "org_id"]
+          },
+        ]
+      }
       animal_events: {
         Row: {
           actor: string | null
@@ -309,6 +351,44 @@ export type Database = {
           },
         ]
       }
+      assessment_overrides: {
+        Row: {
+          approved_by: string
+          approver_role: Database["public"]["Enums"]["member_role"]
+          assessment_id: string
+          created_at: string
+          id: string
+          org_id: string
+          reason: string
+        }
+        Insert: {
+          approved_by?: string
+          approver_role: Database["public"]["Enums"]["member_role"]
+          assessment_id: string
+          created_at?: string
+          id?: string
+          org_id: string
+          reason: string
+        }
+        Update: {
+          approved_by?: string
+          approver_role?: Database["public"]["Enums"]["member_role"]
+          assessment_id?: string
+          created_at?: string
+          id?: string
+          org_id?: string
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_overrides_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: true
+            referencedRelation: "breeding_assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_log: {
         Row: {
           action: string
@@ -344,6 +424,311 @@ export type Database = {
           table_name?: string
         }
         Relationships: []
+      }
+      birth_events: {
+        Row: {
+          assisted: boolean
+          born_on: string
+          created_at: string
+          created_by: string | null
+          dam_id: string
+          farm_id: string
+          id: string
+          mating_id: string | null
+          notes: string | null
+          org_id: string
+          row_seq: number
+          updated_at: string
+          updated_by: string | null
+          version: number
+        }
+        Insert: {
+          assisted?: boolean
+          born_on: string
+          created_at?: string
+          created_by?: string | null
+          dam_id: string
+          farm_id: string
+          id?: string
+          mating_id?: string | null
+          notes?: string | null
+          org_id: string
+          row_seq?: number
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Update: {
+          assisted?: boolean
+          born_on?: string
+          created_at?: string
+          created_by?: string | null
+          dam_id?: string
+          farm_id?: string
+          id?: string
+          mating_id?: string | null
+          notes?: string | null
+          org_id?: string
+          row_seq?: number
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "birth_events_dam_id_org_id_fkey"
+            columns: ["dam_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id", "org_id"]
+          },
+          {
+            foreignKeyName: "birth_events_farm_id_org_id_fkey"
+            columns: ["farm_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "farms"
+            referencedColumns: ["id", "org_id"]
+          },
+          {
+            foreignKeyName: "birth_events_mating_id_org_id_fkey"
+            columns: ["mating_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "mating_events"
+            referencedColumns: ["id", "org_id"]
+          },
+        ]
+      }
+      birth_offspring: {
+        Row: {
+          animal_id: string | null
+          birth_id: string
+          birth_weight_kg: number | null
+          born_alive: boolean
+          id: string
+          org_id: string
+          position: number
+          sex: Database["public"]["Enums"]["animal_sex"] | null
+        }
+        Insert: {
+          animal_id?: string | null
+          birth_id: string
+          birth_weight_kg?: number | null
+          born_alive: boolean
+          id?: string
+          org_id: string
+          position: number
+          sex?: Database["public"]["Enums"]["animal_sex"] | null
+        }
+        Update: {
+          animal_id?: string | null
+          birth_id?: string
+          birth_weight_kg?: number | null
+          born_alive?: boolean
+          id?: string
+          org_id?: string
+          position?: number
+          sex?: Database["public"]["Enums"]["animal_sex"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "birth_offspring_animal_id_org_id_fkey"
+            columns: ["animal_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id", "org_id"]
+          },
+          {
+            foreignKeyName: "birth_offspring_birth_id_org_id_fkey"
+            columns: ["birth_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "birth_events"
+            referencedColumns: ["id", "org_id"]
+          },
+        ]
+      }
+      breeding_assessments: {
+        Row: {
+          buck_id: string
+          classification: Database["public"]["Enums"]["breeding_class"]
+          classified_coi: number
+          completeness: number
+          created_at: string
+          doe_id: string
+          engine_version: string
+          id: string
+          known_coi: number
+          org_id: string
+          pedigree_hash: string
+          pedigree_revision: number
+          policy: Json
+          policy_id: string
+          policy_version: number
+          possible: boolean
+          purpose: string
+          relationships: string[]
+          requested_by: string
+          requires_override: boolean
+          result: Json
+          uses_founder_assumption: boolean
+          verified_coi: number
+          worst_case_coi: number | null
+        }
+        Insert: {
+          buck_id: string
+          classification: Database["public"]["Enums"]["breeding_class"]
+          classified_coi: number
+          completeness: number
+          created_at?: string
+          doe_id: string
+          engine_version: string
+          id?: string
+          known_coi: number
+          org_id: string
+          pedigree_hash: string
+          pedigree_revision: number
+          policy: Json
+          policy_id: string
+          policy_version: number
+          possible: boolean
+          purpose: string
+          relationships?: string[]
+          requested_by: string
+          requires_override: boolean
+          result: Json
+          uses_founder_assumption: boolean
+          verified_coi: number
+          worst_case_coi?: number | null
+        }
+        Update: {
+          buck_id?: string
+          classification?: Database["public"]["Enums"]["breeding_class"]
+          classified_coi?: number
+          completeness?: number
+          created_at?: string
+          doe_id?: string
+          engine_version?: string
+          id?: string
+          known_coi?: number
+          org_id?: string
+          pedigree_hash?: string
+          pedigree_revision?: number
+          policy?: Json
+          policy_id?: string
+          policy_version?: number
+          possible?: boolean
+          purpose?: string
+          relationships?: string[]
+          requested_by?: string
+          requires_override?: boolean
+          result?: Json
+          uses_founder_assumption?: boolean
+          verified_coi?: number
+          worst_case_coi?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "breeding_assessments_buck_id_org_id_fkey"
+            columns: ["buck_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id", "org_id"]
+          },
+          {
+            foreignKeyName: "breeding_assessments_doe_id_org_id_fkey"
+            columns: ["doe_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id", "org_id"]
+          },
+          {
+            foreignKeyName: "breeding_assessments_policy_id_org_id_fkey"
+            columns: ["policy_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "breeding_policies"
+            referencedColumns: ["id", "org_id"]
+          },
+        ]
+      }
+      breeding_policies: {
+        Row: {
+          advisor_confirmed_on: string | null
+          advisor_name: string | null
+          advisor_note: string | null
+          allow_founder_assumption: boolean
+          blocked_relationships: string[]
+          created_at: string
+          created_by: string | null
+          generations: number
+          high_band_min: number
+          id: string
+          low_band_max: number
+          max_coi: number
+          min_completeness: number
+          org_id: string
+          row_seq: number
+          species_code: string
+          updated_at: string
+          updated_by: string | null
+          version: number
+        }
+        Insert: {
+          advisor_confirmed_on?: string | null
+          advisor_name?: string | null
+          advisor_note?: string | null
+          allow_founder_assumption?: boolean
+          blocked_relationships?: string[]
+          created_at?: string
+          created_by?: string | null
+          generations?: number
+          high_band_min?: number
+          id?: string
+          low_band_max?: number
+          max_coi?: number
+          min_completeness?: number
+          org_id: string
+          row_seq?: number
+          species_code: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Update: {
+          advisor_confirmed_on?: string | null
+          advisor_name?: string | null
+          advisor_note?: string | null
+          allow_founder_assumption?: boolean
+          blocked_relationships?: string[]
+          created_at?: string
+          created_by?: string | null
+          generations?: number
+          high_band_min?: number
+          id?: string
+          low_band_max?: number
+          max_coi?: number
+          min_completeness?: number
+          org_id?: string
+          row_seq?: number
+          species_code?: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "breeding_policies_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "breeding_policies_species_code_fkey"
+            columns: ["species_code"]
+            isOneToOne: false
+            referencedRelation: "species"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       breeds: {
         Row: {
@@ -562,6 +947,134 @@ export type Database = {
           },
         ]
       }
+      mating_event_sires: {
+        Row: {
+          assessment_id: string
+          id: string
+          mating_id: string
+          org_id: string
+          override_id: string | null
+          sire_id: string
+        }
+        Insert: {
+          assessment_id: string
+          id?: string
+          mating_id: string
+          org_id: string
+          override_id?: string | null
+          sire_id: string
+        }
+        Update: {
+          assessment_id?: string
+          id?: string
+          mating_id?: string
+          org_id?: string
+          override_id?: string | null
+          sire_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mating_event_sires_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "breeding_assessments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mating_event_sires_mating_id_org_id_fkey"
+            columns: ["mating_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "mating_events"
+            referencedColumns: ["id", "org_id"]
+          },
+          {
+            foreignKeyName: "mating_event_sires_override_id_fkey"
+            columns: ["override_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_overrides"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mating_event_sires_sire_id_org_id_fkey"
+            columns: ["sire_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id", "org_id"]
+          },
+        ]
+      }
+      mating_events: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          dam_id: string
+          ended_on: string | null
+          farm_id: string
+          id: string
+          method: Database["public"]["Enums"]["mating_method"]
+          notes: string | null
+          org_id: string
+          outcome: Database["public"]["Enums"]["mating_outcome"]
+          risk_acknowledged: boolean
+          row_seq: number
+          started_on: string
+          updated_at: string
+          updated_by: string | null
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          dam_id: string
+          ended_on?: string | null
+          farm_id: string
+          id?: string
+          method: Database["public"]["Enums"]["mating_method"]
+          notes?: string | null
+          org_id: string
+          outcome?: Database["public"]["Enums"]["mating_outcome"]
+          risk_acknowledged?: boolean
+          row_seq?: number
+          started_on: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          dam_id?: string
+          ended_on?: string | null
+          farm_id?: string
+          id?: string
+          method?: Database["public"]["Enums"]["mating_method"]
+          notes?: string | null
+          org_id?: string
+          outcome?: Database["public"]["Enums"]["mating_outcome"]
+          risk_acknowledged?: boolean
+          row_seq?: number
+          started_on?: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mating_events_dam_id_org_id_fkey"
+            columns: ["dam_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id", "org_id"]
+          },
+          {
+            foreignKeyName: "mating_events_farm_id_org_id_fkey"
+            columns: ["farm_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "farms"
+            referencedColumns: ["id", "org_id"]
+          },
+        ]
+      }
       memberships: {
         Row: {
           created_at: string
@@ -760,6 +1273,85 @@ export type Database = {
         }
         Relationships: []
       }
+      pregnancy_checks: {
+        Row: {
+          checked_on: string
+          created_at: string
+          created_by: string | null
+          dam_id: string
+          due_on: string | null
+          farm_id: string
+          id: string
+          mating_id: string | null
+          method: Database["public"]["Enums"]["pregnancy_method"]
+          notes: string | null
+          org_id: string
+          result: Database["public"]["Enums"]["pregnancy_result"]
+          row_seq: number
+          updated_at: string
+          updated_by: string | null
+          version: number
+        }
+        Insert: {
+          checked_on: string
+          created_at?: string
+          created_by?: string | null
+          dam_id: string
+          due_on?: string | null
+          farm_id: string
+          id?: string
+          mating_id?: string | null
+          method: Database["public"]["Enums"]["pregnancy_method"]
+          notes?: string | null
+          org_id: string
+          result: Database["public"]["Enums"]["pregnancy_result"]
+          row_seq?: number
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Update: {
+          checked_on?: string
+          created_at?: string
+          created_by?: string | null
+          dam_id?: string
+          due_on?: string | null
+          farm_id?: string
+          id?: string
+          mating_id?: string | null
+          method?: Database["public"]["Enums"]["pregnancy_method"]
+          notes?: string | null
+          org_id?: string
+          result?: Database["public"]["Enums"]["pregnancy_result"]
+          row_seq?: number
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pregnancy_checks_dam_id_org_id_fkey"
+            columns: ["dam_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id", "org_id"]
+          },
+          {
+            foreignKeyName: "pregnancy_checks_farm_id_org_id_fkey"
+            columns: ["farm_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "farms"
+            referencedColumns: ["id", "org_id"]
+          },
+          {
+            foreignKeyName: "pregnancy_checks_mating_id_org_id_fkey"
+            columns: ["mating_id", "org_id"]
+            isOneToOne: false
+            referencedRelation: "mating_events"
+            referencedColumns: ["id", "org_id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -835,6 +1427,10 @@ export type Database = {
     }
     Functions: {
       accept_invitation: { Args: { p_token: string }; Returns: string }
+      breeding_pedigree: {
+        Args: { p_animals: string[]; p_with_bucks?: boolean }
+        Returns: Json
+      }
       create_invitation: {
         Args: {
           p_email: string
@@ -847,6 +1443,49 @@ export type Database = {
       }
       create_organization: {
         Args: { p_first_farm_name?: string; p_name: string }
+        Returns: string
+      }
+      record_mating: {
+        Args: {
+          p_dam: string
+          p_ended_on: string | null
+          p_id?: string
+          p_method: Database["public"]["Enums"]["mating_method"]
+          p_notes?: string
+          p_override_reason?: string
+          p_risk_acknowledged?: boolean
+          p_sires: Json
+          p_started_on: string
+        }
+        Returns: string
+      }
+      record_pregnancy_check: {
+        Args: {
+          p_checked_on: string
+          p_dam: string
+          p_due_on?: string
+          p_id?: string
+          p_mating: string | null
+          p_method: Database["public"]["Enums"]["pregnancy_method"]
+          p_notes?: string
+          p_result: Database["public"]["Enums"]["pregnancy_result"]
+        }
+        Returns: string
+      }
+      register_birth: {
+        Args: {
+          p_assisted?: boolean
+          p_breed?: string
+          p_born_on: string
+          p_dam: string
+          p_dam_confidence?: Database["public"]["Enums"]["parent_confidence"]
+          p_id?: string
+          p_kids: Json
+          p_mating: string | null
+          p_notes?: string
+          p_sire?: string
+          p_sire_confidence?: Database["public"]["Enums"]["parent_confidence"]
+        }
         Returns: string
       }
       set_parent: {
@@ -873,6 +1512,9 @@ export type Database = {
         | "sold"
         | "deceased"
         | "culled"
+      breeding_class: "low" | "elevated" | "insufficient" | "high" | "restricted"
+      mating_method: "pasture" | "hand" | "ai"
+      mating_outcome: "awaiting_check" | "pregnant" | "not_pregnant" | "kidded"
       member_role: "owner" | "manager" | "worker" | "vet"
       member_status: "active" | "suspended"
       parent_confidence: "dna" | "observed" | "reported" | "assumed"
@@ -884,6 +1526,8 @@ export type Database = {
         | "quarantine"
         | "pasture"
         | "other"
+      pregnancy_method: "ultrasound" | "blood_test" | "observation"
+      pregnancy_result: "pregnant" | "not_pregnant" | "unsure"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -912,11 +1556,16 @@ export const Constants = {
         "deceased",
         "culled",
       ],
+      breeding_class: ["low", "elevated", "insufficient", "high", "restricted"],
+      mating_method: ["pasture", "hand", "ai"],
+      mating_outcome: ["awaiting_check", "pregnant", "not_pregnant", "kidded"],
       member_role: ["owner", "manager", "worker", "vet"],
       member_status: ["active", "suspended"],
       parent_confidence: ["dna", "observed", "reported", "assumed"],
       parent_role: ["sire", "dam"],
       pen_type: ["pen", "paddock", "kidding", "quarantine", "pasture", "other"],
+      pregnancy_method: ["ultrasound", "blood_test", "observation"],
+      pregnancy_result: ["pregnant", "not_pregnant", "unsure"],
     },
   },
 } as const

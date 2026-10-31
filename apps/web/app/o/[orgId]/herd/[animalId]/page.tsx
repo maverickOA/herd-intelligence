@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertTriangle, CheckCircle2, ChevronLeft, Pencil, QrCode } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ChevronLeft, ClipboardCheck, ListOrdered, Pencil, QrCode, Scale } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getCandidateSires, getMatings } from "@/lib/breeding";
 import { getOrgContext } from "@/lib/data";
-import { canEditAnimal, getAnimalDetail, getParentOptions, getPedigree } from "@/lib/herd";
-import { GONE_STATUSES, ORIGIN_LABEL, SEX_LABEL, STATUS_LABEL, ageText, animalLabel, formatDate } from "@/lib/labels";
+import { canEditAnimal, canRecordBreeding, getAnimalDetail, getParentOptions, getPedigree } from "@/lib/herd";
+import { GONE_STATUSES, METHOD_SHORT, ORIGIN_LABEL, OUTCOME_LABEL, SEX_LABEL, STATUS_LABEL, ageText, animalLabel, formatDate, formatDay } from "@/lib/labels";
 import { AcquisitionForm } from "./acquisition-form";
 import { ParentRow, type ParentView } from "./parents";
 import { PedigreeTree, ancestorCount } from "./pedigree-tree";
@@ -28,7 +29,17 @@ export default async function AnimalPage({ params, searchParams }: PageProps<"/o
   const detail = await getAnimalDetail(orgId, animalId, canEditAll);
   const { animal } = detail;
   const canEdit = canEditAnimal(ctx, animal.farm_id);
-  const [tree, parentOptions] = await Promise.all([getPedigree(animal.id, 3), canEdit ? getParentOptions(orgId) : Promise.resolve([])]);
+  const [tree, parentOptions, candidates, matings] = await Promise.all([
+    getPedigree(animal.id, 3),
+    canEdit ? getParentOptions(orgId) : Promise.resolve([]),
+    detail.sire ? Promise.resolve([]) : getCandidateSires(animal.id),
+    animal.origin === "pedigree_only"
+      ? Promise.resolve([])
+      : getMatings(orgId, animal.sex === "female" ? { damId: animal.id, limit: 20 } : { sireId: animal.id, limit: 20 }),
+  ]);
+  const inHerd = !GONE_STATUSES.includes(animal.status) && animal.origin !== "pedigree_only";
+  const canBreed = inHerd && canRecordBreeding(ctx, animal.farm_id);
+  const breeding = `/o/${orgId}/breeding`;
   const tz = ctx.org.timezone;
   const recordOnly = animal.origin === "pedigree_only";
   const age = ageText(animal.birth_date, animal.birth_date_estimated);
@@ -142,8 +153,63 @@ export default async function AnimalPage({ params, searchParams }: PageProps<"/o
             <ParentRow key={role} orgId={orgId} childId={animal.id} current={parentView(role)} options={parentOptions} canEdit={canEdit} />
           ))}
         </div>
+        {candidates.length > 0 && (
+          <p className="mt-2 rounded-md bg-muted p-3 text-sm">
+            Father uncertain. Possible sires: {candidates.map((c) => c.label ?? "a buck on a farm you can't see").join(", ")}. Breeding checks use the
+            worst case until the sire is recorded.
+          </p>
+        )}
         {!canEdit && <p className="mt-2 text-sm text-muted-foreground">Owners and this farm&apos;s managers can record parents.</p>}
       </section>
+
+      {inHerd && (
+        <section aria-labelledby="breeding-heading" className="mt-8">
+          <h2 id="breeding-heading" className="mb-3 text-lg font-semibold">
+            Breeding
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="outline" className="h-11">
+              <Link href={`${breeding}/check?${animal.sex === "female" ? "doe" : "buck"}=${animal.id}`}>
+                <Scale aria-hidden /> Check a pairing
+              </Link>
+            </Button>
+            {animal.sex === "female" && (
+              <Button asChild variant="outline" className="h-11">
+                <Link href={`${breeding}/rank?doe=${animal.id}`}>
+                  <ListOrdered aria-hidden /> Best bucks for her
+                </Link>
+              </Button>
+            )}
+            {canBreed && (
+              <Button asChild variant="outline" className="h-11">
+                <Link href={`${breeding}/mate?${animal.sex === "female" ? "doe" : "buck"}=${animal.id}`}>
+                  <ClipboardCheck aria-hidden /> Record a mating
+                </Link>
+              </Button>
+            )}
+          </div>
+          {matings.length > 0 && (
+            <ul className="mt-3 grid gap-2">
+              {matings.map((m) => (
+                <li key={m.id}>
+                  <Link href={`${breeding}/matings/${m.id}`} className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border bg-card p-3 text-sm hover:bg-accent">
+                    <span className="min-w-0 flex-1 font-medium">
+                      {animal.sex === "female"
+                        ? m.sires.map((x) => x.label ?? "a buck you can't see").join(", ")
+                        : m.dam
+                          ? animalLabel(m.dam)
+                          : "Doe"}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {METHOD_SHORT[m.method]} {formatDay(m.started_on)} · {OUTCOME_LABEL[m.outcome]}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
 
       <section aria-labelledby="pedigree-heading" className="mt-8">
         <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">

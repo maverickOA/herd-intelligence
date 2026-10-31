@@ -168,6 +168,111 @@ export const acquisitionSchema = z.object({
   notes: blankToNull.refine((v) => v === null || v.length <= 500, "Too long"),
 });
 
+/* ---------- Breeding (M4) ---------- */
+
+const requiredDate = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a date")
+  .refine((v) => v <= new Date().toISOString().slice(0, 10), "Date cannot be in the future");
+/** Optional date that may be in the future (due dates, end of a breeding period). */
+const anyDate = z
+  .string()
+  .trim()
+  .transform((v) => (v === "" ? null : v))
+  .refine((v) => v === null || (/^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v))), "Enter a valid date");
+const pctField = (label: string) =>
+  z
+    .string()
+    .trim()
+    .regex(/^\d{1,3}(\.\d{1,4})?$/, `Enter ${label} as a percentage, e.g. 6.25`)
+    .transform((v) => Number(v) / 100)
+    .refine((v) => v > 0 && v <= 1, `${label} must be between 0 and 100%`);
+
+export const pairingSchema = z.object({
+  orgId: uuid,
+  buckId: z.string().uuid("Choose a buck"),
+  doeId: z.string().uuid("Choose a doe"),
+});
+
+export const matingCheckSchema = z.object({
+  orgId: uuid,
+  doeId: z.string().uuid("Choose a doe"),
+  method: z.enum(Constants.public.Enums.mating_method, { error: "Choose how she was mated" }),
+  buckIds: z.array(z.string().uuid()).min(1, "Choose a buck").max(10, "Choose at most 10 bucks"),
+});
+
+export const matingRecordSchema = matingCheckSchema
+  .extend({
+    startedOn: requiredDate,
+    endedOn: anyDate,
+    notes: blankToNull.refine((v) => v === null || v.length <= 1000, "Too long"),
+    reason: blankToNull.refine((v) => v === null || v.length <= 1000, "Too long"),
+    acknowledged: z.boolean(),
+    assessments: z.array(z.object({ sireId: z.string().uuid(), assessmentId: z.string().uuid() })).min(1),
+  })
+  .refine((v) => v.method === "pasture" || v.buckIds.length === 1, { path: ["buckIds"], message: "Hand mating and AI use one buck" })
+  .refine((v) => !v.endedOn || v.endedOn >= v.startedOn, { path: ["endedOn"], message: "The end date must be on or after the start" });
+
+export const pregnancyCheckSchema = z
+  .object({
+    orgId: uuid,
+    doeId: uuid,
+    matingId: optionalUuid,
+    checkedOn: requiredDate,
+    method: z.enum(Constants.public.Enums.pregnancy_method, { error: "Choose how she was checked" }),
+    result: z.enum(Constants.public.Enums.pregnancy_result, { error: "Choose the result" }),
+    dueOn: anyDate,
+    notes: blankToNull.refine((v) => v === null || v.length <= 1000, "Too long"),
+  })
+  .refine((v) => !v.dueOn || v.result === "pregnant", { path: ["dueOn"], message: "Only for a pregnant result" })
+  .refine((v) => !v.dueOn || v.dueOn > v.checkedOn, { path: ["dueOn"], message: "The due date must be after the check" });
+
+export const kidSchema = z
+  .object({
+    alive: z.boolean(),
+    sex: z.enum(["", ...Constants.public.Enums.animal_sex]),
+    tag: blankToNull.refine((v) => v === null || v.length <= 40, "Tag must be at most 40 characters"),
+    name: blankToNull.refine((v) => v === null || v.length <= 80, "Too long"),
+    weightKg: blankToNull.refine((v) => v === null || (/^\d{1,2}(\.\d{1,2})?$/.test(v) && Number(v) > 0 && Number(v) < 20), "Weight in kg, e.g. 2.8"),
+  })
+  .refine((k) => !k.alive || k.sex, { path: ["sex"], message: "Choose buck or doe" })
+  .refine((k) => !k.alive || k.tag || k.name, { path: ["tag"], message: "Give a tag or a name" });
+
+export const birthSchema = z.object({
+  orgId: uuid,
+  doeId: z.string().uuid("Choose the doe"),
+  matingId: optionalUuid,
+  bornOn: requiredDate,
+  breedId: optionalUuid,
+  sireId: optionalUuid,
+  sireConfidence: z.enum(Constants.public.Enums.parent_confidence),
+  assisted: z.boolean(),
+  notes: blankToNull.refine((v) => v === null || v.length <= 1000, "Too long"),
+});
+
+export const policySchema = z
+  .object({
+    orgId: uuid,
+    lowBandMax: pctField("Low band limit"),
+    highBandMin: pctField("High risk threshold"),
+    maxCoi: pctField("Maximum COI"),
+    minCompleteness: z
+      .string()
+      .trim()
+      .regex(/^\d{1,3}$/, "Enter a whole percentage, e.g. 70")
+      .transform((v) => Number(v) / 100)
+      .refine((v) => v >= 0 && v <= 1, "Between 0 and 100%"),
+    generations: z.coerce.number().int().min(1).max(6),
+    blocked: z.array(z.string()),
+    allowFounderAssumption: z.boolean(),
+    advisorName: blankToNull.refine((v) => v === null || (v.length >= 2 && v.length <= 120), "2 to 120 characters"),
+    advisorNote: blankToNull.refine((v) => v === null || v.length <= 1000, "Too long"),
+    advisorConfirmedOn: isoDate,
+  })
+  .refine((v) => v.lowBandMax <= v.highBandMin, { path: ["lowBandMax"], message: "Must not be above the high risk threshold" })
+  .refine((v) => v.highBandMin <= v.maxCoi, { path: ["highBandMin"], message: "Must not be above the maximum" })
+  .refine((v) => !v.advisorConfirmedOn || v.advisorName, { path: ["advisorName"], message: "Name the advisor who confirmed it" });
+
 export type FieldErrors = Record<string, string[] | undefined>;
 
 export function fieldErrors(error: z.ZodError): FieldErrors {

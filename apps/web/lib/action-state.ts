@@ -31,7 +31,7 @@ export function friendlyError(error: DbError, fallback = "Something went wrong. 
     return "That already exists.";
   }
   if (/violates|syntax|invalid input|relation|column/i.test(msg)) return fallback;
-  if (msg && ["22023", "42501", "23514", "P0001"].includes(error.code ?? "")) return msg;
+  if (msg && ["22023", "42501", "23514", "P0001", "P0002"].includes(error.code ?? "")) return msg;
   return fallback;
 }
 

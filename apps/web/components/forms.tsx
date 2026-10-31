@@ -1,5 +1,6 @@
 "use client";
 
+import { useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -97,4 +98,38 @@ export function FieldErrorText({ state, name }: { state: ActionState; name: stri
   const errors = state.fieldErrors?.[name];
   if (!errors) return null;
   return <p className="text-sm text-destructive">{errors[0]}</p>;
+}
+
+/**
+ * Run a Server Action from onSubmit instead of <form action>, so React does
+ * not reset the form afterwards. Needed where the form keeps state across
+ * steps (controlled selects would otherwise snap back to their first option).
+ */
+export function useNoResetSubmit(action: (formData: FormData) => void) {
+  const [pending, start] = useTransition();
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget, (e.nativeEvent as SubmitEvent).submitter);
+    start(() => action(fd));
+  };
+  return { onSubmit, pending };
+}
+
+export function PendingButton({
+  pending,
+  children,
+  pendingText,
+  className,
+}: {
+  pending: boolean;
+  children: React.ReactNode;
+  pendingText?: string;
+  className?: string;
+}) {
+  return (
+    <Button type="submit" disabled={pending} aria-busy={pending} className={className}>
+      {pending && <Loader2 className="animate-spin" aria-hidden />}
+      {pending && pendingText ? pendingText : children}
+    </Button>
+  );
 }

@@ -2,18 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, PawPrint, Settings, Users, Warehouse } from "lucide-react";
+import { HeartHandshake, Home, PawPrint, Settings, Users, Warehouse } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /*
- * Only screens that work today appear here. Breeding and Tasks join the bar
- * as those milestones ship, so there are never dead buttons.
+ * Only screens that work today appear here. Tasks joins the bar when that
+ * milestone ships, so there are never dead buttons.
  */
 function items(orgId: string) {
   const base = `/o/${orgId}`;
   return [
     { href: base, label: "Home", icon: Home, exact: true },
     { href: `${base}/herd`, label: "Herd", icon: PawPrint },
+    { href: `${base}/breeding`, label: "Breeding", icon: HeartHandshake },
     { href: `${base}/farms`, label: "Farms", icon: Warehouse },
     { href: `${base}/team`, label: "Team", icon: Users },
     { href: `${base}/settings`, label: "Settings", icon: Settings },
@@ -59,7 +60,7 @@ export function BottomNav({ orgId }: { orgId: string }) {
       aria-label="Main"
       className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
     >
-      <ul className="mx-auto grid max-w-md grid-cols-5">
+      <ul className="mx-auto grid max-w-md grid-cols-6">
         {items(orgId).map(({ href, label, icon: Icon, exact }) => {
           const active = isActive(href, exact);
           return (
@@ -68,7 +69,7 @@ export function BottomNav({ orgId }: { orgId: string }) {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium",
+                  "flex h-16 flex-col items-center justify-center gap-1 text-[0.7rem] font-medium",
                   active ? "text-primary" : "text-muted-foreground",
                 )}
               >

@@ -263,3 +263,15 @@ export async function getParentOptions(orgId: string) {
   if (error) throw error;
   return (data ?? []).map((a) => ({ id: a.id, sex: a.sex, label: labelOf(a) + (a.origin === "pedigree_only" ? " (records only)" : "") }));
 }
+
+/** Mirrors app.can_record_breeding(): owners; assigned managers, workers and vets. */
+export function canRecordBreeding(ctx: OrgContext, farmId: string | null) {
+  if (!farmId) return false;
+  return ctx.role === "owner" || ctx.assignedFarmIds.includes(farmId);
+}
+
+/** Mirrors app.can_manage_farm(): who may approve a restricted pairing. */
+export function canApproveRestricted(ctx: OrgContext, farmId: string | null) {
+  if (ctx.role === "owner") return true;
+  return ctx.role === "manager" && !!farmId && ctx.assignedFarmIds.includes(farmId);
+}
