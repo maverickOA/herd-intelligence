@@ -32,7 +32,7 @@ export default async function MatingPage({ params, searchParams }: PageProps<"/o
       </Link>
       {sp.saved === "mating" && (
         <Alert className="mb-4" role="status">
-          <CheckCircle2 className="text-primary" aria-hidden />
+          <CheckCircle2 className="text-success" aria-hidden />
           <AlertDescription>Mating recorded with its breeding check.</AlertDescription>
         </Alert>
       )}
@@ -83,7 +83,7 @@ export default async function MatingPage({ params, searchParams }: PageProps<"/o
       </Card>
 
       <section className="mt-6">
-        <h2 className="mb-3 text-lg font-semibold">{m.sires.length > 1 ? "Bucks (father uncertain)" : "Buck"}</h2>
+        <h2 className="mb-3 text-[0.9375rem] font-semibold">{m.sires.length > 1 ? "Bucks (father uncertain)" : "Buck"}</h2>
         <ul className="grid gap-2">
           {m.sires.map((s) => (
             <li key={s.sireId} className="flex flex-wrap items-center gap-2 rounded-xl border bg-card p-3 text-sm">
@@ -96,7 +96,7 @@ export default async function MatingPage({ params, searchParams }: PageProps<"/o
               )}
               {s.classification && <ClassBadge value={s.classification} />}
               {s.overridden && <Badge variant="outline">Approved with a reason</Badge>}
-              <Link href={`${base}/assessments/${s.assessmentId}`} className="text-primary underline-offset-4 hover:underline">
+              <Link href={`${base}/assessments/${s.assessmentId}`} className="underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
                 Check
               </Link>
             </li>
@@ -106,7 +106,7 @@ export default async function MatingPage({ params, searchParams }: PageProps<"/o
       </section>
 
       <section className="mt-6">
-        <h2 className="mb-3 text-lg font-semibold">Pregnancy checks</h2>
+        <h2 className="mb-3 text-[0.9375rem] font-semibold">Pregnancy checks</h2>
         {checks.length === 0 ? (
           <p className="text-sm text-muted-foreground">None yet. A scan is usually reliable from about 30 days after mating.</p>
         ) : (
@@ -139,7 +139,7 @@ export default async function MatingPage({ params, searchParams }: PageProps<"/o
 
       {birth && (
         <section className="mt-6">
-          <h2 className="mb-3 text-lg font-semibold">Kidding</h2>
+          <h2 className="mb-3 text-[0.9375rem] font-semibold">Kidding</h2>
           <Link href={`${base}/kiddings/${birth.id}`} className="flex items-center gap-3 rounded-xl border bg-card p-3 hover:bg-accent">
             <Baby className="size-5 text-muted-foreground" aria-hidden />
             <span className="font-medium">Kidded {formatDay(birth.born_on)}</span>

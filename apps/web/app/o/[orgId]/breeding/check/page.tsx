@@ -31,7 +31,7 @@ export default async function CheckPage({ params, searchParams }: PageProps<"/o/
           {bucks.length === 0 || does.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               You need at least one buck and one doe in the herd.{" "}
-              <Link href={`/o/${orgId}/herd/new`} className="font-medium text-primary underline-offset-4 hover:underline">
+              <Link href={`/o/${orgId}/herd/new`} className="font-medium underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
                 Register an animal
               </Link>
             </p>

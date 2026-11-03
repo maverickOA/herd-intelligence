@@ -100,7 +100,7 @@ export default async function AssessmentPage({ params }: PageProps<"/o/[orgId]/b
       </Card>
 
       <section className="mt-6">
-        <h2 className="mb-3 text-lg font-semibold">The figures</h2>
+        <h2 className="mb-3 text-[0.9375rem] font-semibold">The figures</h2>
         <dl className="grid gap-2 sm:grid-cols-2">
           {figures.map(([k, v, hint]) => (
             <div key={k} className="rounded-xl border bg-card p-3">
@@ -114,7 +114,7 @@ export default async function AssessmentPage({ params }: PageProps<"/o/[orgId]/b
 
       {a.relationships.length > 0 && (
         <section className="mt-6">
-          <h2 className="mb-3 text-lg font-semibold">How they are related</h2>
+          <h2 className="mb-3 text-[0.9375rem] font-semibold">How they are related</h2>
           <ul className="grid gap-2 text-sm">
             {a.relationships.map((r, i) => (
               <li key={i} className="rounded-xl border bg-card p-3">
@@ -129,7 +129,7 @@ export default async function AssessmentPage({ params }: PageProps<"/o/[orgId]/b
 
       {a.commonAncestors.length > 0 && (
         <section className="mt-6">
-          <h2 className="mb-1 text-lg font-semibold">Shared ancestors</h2>
+          <h2 className="mb-1 text-[0.9375rem] font-semibold">Shared ancestors</h2>
           <p className="mb-3 text-sm text-muted-foreground">Each line of descent through a shared ancestor adds to the kid&apos;s COI (Wright&apos;s paths).</p>
           <ul className="grid gap-2">
             {a.commonAncestors.map((c) => (
@@ -155,7 +155,7 @@ export default async function AssessmentPage({ params }: PageProps<"/o/[orgId]/b
 
       {a.limitations.length > 0 && (
         <section className="mt-6">
-          <h2 className="mb-3 text-lg font-semibold">What this check can&apos;t see</h2>
+          <h2 className="mb-3 text-[0.9375rem] font-semibold">What this check can&apos;t see</h2>
           <ul className="grid list-disc gap-1.5 pl-5 text-sm">
             {a.limitations.map((l, i) => (
               <li key={i}>{L(l)}</li>

@@ -14,15 +14,15 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f7f6f0" },
-    { media: "(prefers-color-scheme: dark)", color: "#1b211d" },
+    { media: "(prefers-color-scheme: light)", color: "#fcfcfc" },
+    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
   ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en-NG" suppressHydrationWarning className="h-full">
-      {/* System fonts: no font download, fast on mid-range phones and slow networks. */}
+      {/* Inter is self-hosted (one variable woff2 per script, latin ~ 48 KB) and cached after the first visit. */}
       <body className="min-h-full font-sans">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}

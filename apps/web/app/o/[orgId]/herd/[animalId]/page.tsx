@@ -85,7 +85,7 @@ export default async function AnimalPage({ params, searchParams }: PageProps<"/o
 
       {saved && (
         <Alert className="mb-4" role="status">
-          <CheckCircle2 className="text-primary" aria-hidden />
+          <CheckCircle2 className="text-success" aria-hidden />
           <AlertDescription>{saved}</AlertDescription>
         </Alert>
       )}
@@ -189,7 +189,7 @@ export default async function AnimalPage({ params, searchParams }: PageProps<"/o
             )}
           </div>
           {matings.length > 0 && (
-            <ul className="mt-3 grid gap-2">
+            <ul className="rows mt-3 grid">
               {matings.map((m) => (
                 <li key={m.id}>
                   <Link href={`${breeding}/matings/${m.id}`} className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border bg-card p-3 text-sm hover:bg-accent">

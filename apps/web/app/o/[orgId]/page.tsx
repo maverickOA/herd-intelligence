@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Circle, PawPrint, Warehouse, Users } from "lucide-react";
+import { ArrowRight, CheckCircle2, Circle } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getFarms, getOpenInvitations, getOrgContext, getTeam, isOwner } from "@/lib/data";
 import { countAnimals } from "@/lib/herd";
 import { ROLE_LABEL } from "@/lib/labels";
@@ -44,86 +43,70 @@ export default async function OrgHome({ params }: PageProps<"/o/[orgId]">) {
         }
       />
 
-      <div className="grid grid-cols-3 gap-3">
-        <Stat href={`${base}/herd`} icon={PawPrint} label={herdSize === 1 ? "Animal" : "Animals"} value={herdSize} />
-        <Stat href={`${base}/farms`} icon={Warehouse} label={farms.length === 1 ? "Farm" : "Farms"} value={farms.length} />
-        <Stat href={`${base}/team`} icon={Users} label={activeMembers === 1 ? "Person" : "People"} value={activeMembers} />
+      <div className="grid grid-cols-3 divide-x overflow-hidden rounded-xl border bg-card">
+        <Stat href={`${base}/herd`} label={herdSize === 1 ? "Animal" : "Animals"} value={herdSize} />
+        <Stat href={`${base}/farms`} label={farms.length === 1 ? "Farm" : "Farms"} value={farms.length} />
+        <Stat href={`${base}/team`} label={activeMembers === 1 ? "Person" : "People"} value={activeMembers} />
       </div>
 
       {owner && remaining > 0 && (
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="text-base">Get set up</CardTitle>
-            <CardDescription>
-              {remaining} step{remaining === 1 ? "" : "s"} left to get your farm running here.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="grid gap-1">
-              {steps.map((s) => (
-                <li key={s.label}>
-                  <Link
-                    href={s.href}
-                    className="flex min-h-11 items-center gap-3 rounded-md px-2 text-sm hover:bg-accent"
-                  >
-                    {s.done ? (
-                      <CheckCircle2 className="size-5 text-primary" aria-label="Done" />
-                    ) : (
-                      <Circle className="size-5 text-muted-foreground" aria-label="To do" />
-                    )}
-                    <span className={s.done ? "text-muted-foreground line-through" : "font-medium"}>{s.label}</span>
-                    {!s.done && <ArrowRight className="ml-auto size-4 text-muted-foreground" aria-hidden />}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+        <section className="mt-10">
+          <div className="mb-3 flex items-baseline justify-between gap-3">
+            <h2 className="text-[0.9375rem] font-semibold">Get set up</h2>
+            <p className="text-sm text-muted-foreground tabular-nums">
+              {steps.length - remaining} of {steps.length} done
+            </p>
+          </div>
+          <div className="mb-3 h-1 overflow-hidden rounded-full bg-muted" aria-hidden>
+            <div className="h-full rounded-full bg-foreground" style={{ width: `${((steps.length - remaining) / steps.length) * 100}%` }} />
+          </div>
+          <ul className="rows grid">
+            {steps.map((s) => (
+              <li key={s.label}>
+                <Link href={s.href} className="flex min-h-12 items-center gap-3 border bg-card px-3.5 text-sm transition-colors hover:bg-accent">
+                  {s.done ? (
+                    <CheckCircle2 className="size-[1.125rem] text-success" aria-label="Done" />
+                  ) : (
+                    <Circle className="size-[1.125rem] text-muted-foreground/60" aria-label="To do" />
+                  )}
+                  <span className={s.done ? "text-muted-foreground line-through decoration-muted-foreground/40" : "font-medium"}>{s.label}</span>
+                  {!s.done && <ArrowRight className="ml-auto size-4 text-muted-foreground" aria-hidden />}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="text-base">What&apos;s coming</CardTitle>
-          <CardDescription>
-            Herd Intelligence is being built in stages. These arrive next, in this order:
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ol className="grid list-decimal gap-2 pl-5 text-sm">
-            <li>
-              <span className="font-medium">Breeding checks</span>: inbreeding risk before every mating, ranking bucks
-              for a doe, matings, pregnancy checks and kidding records.
+      <section className="mt-10">
+        <h2 className="mb-1 text-[0.9375rem] font-semibold">What&apos;s next</h2>
+        <p className="mb-4 text-sm text-muted-foreground">Herd Intelligence ships in stages. These arrive next, in this order.</p>
+        <ol className="grid gap-px overflow-hidden rounded-xl border bg-border">
+          {ROADMAP.map((r, i) => (
+            <li key={r.title} className="flex gap-4 bg-card p-4">
+              <span className="mt-0.5 font-mono text-xs text-muted-foreground tabular-nums">0{i + 1}</span>
+              <div className="min-w-0">
+                <p className="text-sm font-medium">{r.title}</p>
+                <p className="mt-0.5 text-sm text-muted-foreground">{r.text}</p>
+              </div>
             </li>
-            <li>
-              <span className="font-medium">Works offline</span>: record in the pen, sync when you have signal.
-            </li>
-            <li>
-              <span className="font-medium">Reports and import</span>: pedigree certificates for buyers, exports, and
-              spreadsheet import.
-            </li>
-          </ol>
-        </CardContent>
-      </Card>
+          ))}
+        </ol>
+      </section>
     </>
   );
 }
 
-function Stat({
-  href,
-  icon: Icon,
-  label,
-  value,
-}: {
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: number;
-}) {
+const ROADMAP = [
+  { title: "Works offline", text: "Record in the pen, sync when you have signal." },
+  { title: "Reports and import", text: "Pedigree certificates for buyers, exports, and spreadsheet import." },
+];
+
+function Stat({ href, label, value }: { href: string; label: string; value: number }) {
   return (
-    <Link href={href} className="rounded-xl border bg-card p-4 transition-colors hover:bg-accent">
-      <Icon className="size-4 text-muted-foreground" />
-      <p className="mt-2 text-2xl font-semibold tabular-nums">{value}</p>
-      <p className="text-xs text-muted-foreground">{label}</p>
+    <Link href={href} className="group px-4 py-4 transition-colors hover:bg-accent md:px-5 md:py-5">
+      <p className="text-xs text-muted-foreground group-hover:text-foreground">{label}</p>
+      <p className="mt-1.5 text-[1.75rem] leading-none font-semibold tracking-[-0.03em] tabular-nums md:text-[2rem]">{value}</p>
     </Link>
   );
 }

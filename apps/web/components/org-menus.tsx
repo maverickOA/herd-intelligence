@@ -20,8 +20,11 @@ export function OrgSwitcher({ current, orgs }: { current: Org; orgs: Org[] }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-auto min-h-10 w-full justify-between gap-2 px-2 py-1.5 text-left">
-          <span className="min-w-0">
+        <Button variant="ghost" className="h-auto min-h-11 w-full justify-between gap-2.5 border bg-card px-2 py-1.5 text-left text-foreground hover:bg-accent">
+          <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-md bg-foreground text-[0.6875rem] font-semibold text-background">
+            {initials(current.name, null)}
+          </span>
+          <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-semibold">{current.name}</span>
             <span className="block truncate text-xs text-muted-foreground">{ROLE_LABEL[current.role]}</span>
           </span>
@@ -55,7 +58,7 @@ export function UserMenu({ orgId, name, email }: { orgId: string; name: string |
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="size-10 rounded-full" aria-label="Your account">
-          <span className="flex size-8 items-center justify-center rounded-full bg-primary/15 text-xs font-semibold text-primary">
+          <span className="flex size-8 items-center justify-center rounded-full bg-muted text-xs font-semibold text-foreground">
             {initials(name, email)}
           </span>
         </Button>

@@ -17,7 +17,7 @@ export function SignupForm({ next, invited }: { next: string; invited: boolean }
     return (
       <Card>
         <CardHeader>
-          <MailCheck className="mb-2 size-8 text-primary" aria-hidden />
+          <MailCheck className="mb-2 size-8 text-success" aria-hidden />
           <CardTitle className="text-xl">Check your email</CardTitle>
           <CardDescription>{state.message}</CardDescription>
         </CardHeader>
@@ -64,7 +64,7 @@ export function SignupForm({ next, invited }: { next: string; invited: boolean }
         </form>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href={`/login${qs}`} className="font-medium text-primary underline-offset-4 hover:underline">
+          <Link href={`/login${qs}`} className="font-medium underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
             Sign in
           </Link>
         </p>

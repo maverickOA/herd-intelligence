@@ -185,7 +185,7 @@ export function MemberCard({
   return (
     <li className="min-w-0 rounded-xl border bg-card">
       <div className="flex items-start gap-3 p-4">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
           {initials(member.fullName, member.email)}
         </span>
         <div className="min-w-0 flex-1">

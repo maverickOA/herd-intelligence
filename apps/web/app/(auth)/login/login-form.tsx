@@ -40,7 +40,7 @@ export function LoginForm({ next, confirmed }: { next: string; confirmed?: boole
           </Link>
           <p className="text-muted-foreground">
             New here?{" "}
-            <Link href={`/signup${qs}`} className="font-medium text-primary underline-offset-4 hover:underline">
+            <Link href={`/signup${qs}`} className="font-medium underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
               Create an account
             </Link>
           </p>

@@ -24,7 +24,7 @@ export default async function BirthPage({ params, searchParams }: PageProps<"/o/
       </Link>
       {sp.saved && (
         <Alert className="mb-4" role="status">
-          <CheckCircle2 className="text-primary" aria-hidden />
+          <CheckCircle2 className="text-success" aria-hidden />
           <AlertDescription>
             Kidding recorded. {alive.length} kid{alive.length === 1 ? "" : "s"} registered with {alive.length === 1 ? "its" : "their"} parents.
           </AlertDescription>
@@ -44,13 +44,13 @@ export default async function BirthPage({ params, searchParams }: PageProps<"/o/
           </p>
           {birth.notes && <p className="mt-2 whitespace-pre-line">{birth.notes}</p>}
           {birth.mating_id && (
-            <Link href={`${base}/breeding/matings/${birth.mating_id}`} className="mt-2 inline-block text-primary underline-offset-4 hover:underline">
+            <Link href={`${base}/breeding/matings/${birth.mating_id}`} className="mt-2 inline-block underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
               See the mating
             </Link>
           )}
         </CardContent>
       </Card>
-      <ul className="mt-4 grid gap-2">
+      <ul className="rows mt-4 grid">
         {offspring.map((o) => (
           <li key={o.id}>
             {o.animal_id && labels.get(o.animal_id) ? (

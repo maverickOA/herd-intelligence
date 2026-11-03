@@ -157,7 +157,7 @@ export function MatingForm({
                 <p className="mt-1 text-muted-foreground">
                   Kid COI {c.coi}
                   {c.worst ? `, up to ${c.worst} if an uncertain sire is the father` : ""} · completeness {pct(c.completeness, 0)} ·{" "}
-                  <a href={`/o/${orgId}/breeding/assessments/${c.assessmentId}`} target="_blank" rel="noreferrer" className="text-primary underline-offset-4 hover:underline">
+                  <a href={`/o/${orgId}/breeding/assessments/${c.assessmentId}`} target="_blank" rel="noreferrer" className="underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
                     full details
                   </a>
                 </p>

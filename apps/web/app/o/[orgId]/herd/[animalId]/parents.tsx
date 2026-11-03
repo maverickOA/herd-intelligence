@@ -88,7 +88,7 @@ export function ParentRow({
           </div>
           <p className="text-xs text-muted-foreground">
             Changing a {word.toLowerCase()} keeps the old link in the history. Not listed?{" "}
-            <Link className="text-primary underline-offset-4 hover:underline" href={`/o/${orgId}/herd/new?childOf=${childId}&role=${current.role}`}>
+            <Link className="underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground" href={`/o/${orgId}/herd/new?childOf=${childId}&role=${current.role}`}>
               Add one from papers
             </Link>
             .
@@ -106,7 +106,7 @@ export function ParentRow({
           current.hidden ? (
             <p className="text-sm text-muted-foreground">Recorded, but on a farm you can&apos;t see</p>
           ) : (
-            <Link href={`/o/${orgId}/herd/${current.parentId}`} className="block truncate font-medium text-primary underline-offset-4 hover:underline">
+            <Link href={`/o/${orgId}/herd/${current.parentId}`} className="block truncate font-medium underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
               {current.label}
             </Link>
           )

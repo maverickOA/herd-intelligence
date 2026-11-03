@@ -77,7 +77,7 @@ export default async function HerdPage({ params, searchParams }: PageProps<"/o/[
               aria-current={active ? "page" : undefined}
               className={cn(
                 "flex h-9 shrink-0 items-center rounded-full border px-3 text-sm",
-                active ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-accent",
+                active ? "border-foreground bg-foreground text-background" : "text-muted-foreground hover:bg-accent hover:text-foreground",
               )}
             >
               {v.label}
@@ -119,7 +119,7 @@ export default async function HerdPage({ params, searchParams }: PageProps<"/o/[
           <CardContent className="py-10 text-center text-sm text-muted-foreground">
             {filtered ? (
               <>
-                No animals match. <Link className="text-primary underline-offset-4 hover:underline" href={`${base}?view=${filter.view}`}>Clear the filters</Link>
+                No animals match. <Link className="underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground" href={`${base}?view=${filter.view}`}>Clear the filters</Link>
               </>
             ) : filter.view === "records" ? (
               "No ancestors on record yet. Add them from an animal's profile with “Add from papers”."
@@ -128,7 +128,7 @@ export default async function HerdPage({ params, searchParams }: PageProps<"/o/[
             ) : canRegister ? (
               <>
                 No animals yet.{" "}
-                <Link className="font-medium text-primary underline-offset-4 hover:underline" href={`${base}/new`}>
+                <Link className="font-medium underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground" href={`${base}/new`}>
                   Register your first one
                 </Link>
                 .
@@ -139,7 +139,7 @@ export default async function HerdPage({ params, searchParams }: PageProps<"/o/[
           </CardContent>
         </Card>
       ) : (
-        <ul className="grid gap-2">
+        <ul className="rows grid">
           {animals.map((a) => {
             const age = ageText(a.birth_date, a.birth_date_estimated);
             const gone = GONE_STATUSES.includes(a.status);
@@ -149,8 +149,8 @@ export default async function HerdPage({ params, searchParams }: PageProps<"/o/[
                   <span
                     aria-hidden
                     className={cn(
-                      "flex size-10 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
-                      a.sex === "male" ? "bg-primary/15 text-primary" : "bg-warning/20 text-foreground",
+                      "flex size-9 shrink-0 items-center justify-center rounded-lg text-xs font-semibold",
+                      a.sex === "male" ? "bg-foreground text-background" : "border bg-muted text-foreground",
                     )}
                   >
                     {SEX_LABEL[a.sex][0]}

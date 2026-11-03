@@ -64,7 +64,7 @@ export default async function KiddingPage({ params, searchParams }: PageProps<"/
               {!mating && (
                 <p className="mb-4 text-sm text-muted-foreground">
                   Recorded the mating? Open it from{" "}
-                  <Link href={`${base}`} className="text-primary underline-offset-4 hover:underline">
+                  <Link href={`${base}`} className="underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
                     Breeding
                   </Link>{" "}
                   so the sire is filled in for you.
