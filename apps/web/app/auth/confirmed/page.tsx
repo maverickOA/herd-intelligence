@@ -21,7 +21,7 @@ export default async function EmailConfirmedPage({ searchParams }: PageProps<"/a
       <Brand className="mb-8 self-center text-lg" />
       <Card>
         <CardHeader>
-          <CircleCheck className="mb-2 size-10 text-primary" aria-hidden />
+          <CircleCheck className="mb-2 size-10 text-success" aria-hidden />
           <CardTitle className="text-xl">Your email is confirmed</CardTitle>
           <CardDescription>
             {user

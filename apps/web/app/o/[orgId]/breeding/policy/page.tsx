@@ -33,7 +33,7 @@ export default async function PolicyPage({ params }: PageProps<"/o/[orgId]/breed
         <>
           {p.advisor_confirmed_on ? (
             <Alert className="mb-4">
-              <ShieldCheck className="text-primary" aria-hidden />
+              <ShieldCheck className="text-success" aria-hidden />
               <AlertTitle>Confirmed by {p.advisor_name}</AlertTitle>
               <AlertDescription>On {formatDay(p.advisor_confirmed_on)}.{p.advisor_note ? ` “${p.advisor_note}”` : ""}</AlertDescription>
             </Alert>

@@ -25,13 +25,13 @@ export default async function MatingsPage({ params }: PageProps<"/o/[orgId]/bree
         <Card>
           <CardContent className="py-6 text-center text-sm text-muted-foreground">
             No matings recorded yet.{" "}
-            <Link href={`${base}/mate`} className="font-medium text-primary underline-offset-4 hover:underline">
+            <Link href={`${base}/mate`} className="font-medium underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
               Record one
             </Link>
           </CardContent>
         </Card>
       ) : (
-        <ul className="grid gap-2">
+        <ul className="rows grid">
           {matings.map((m) => (
             <li key={m.id}>
               <Link href={`${base}/matings/${m.id}`} className="flex items-center gap-3 rounded-xl border bg-card p-3 hover:bg-accent">

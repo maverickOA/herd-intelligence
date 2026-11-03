@@ -29,7 +29,7 @@ function useActive() {
 export function SidebarNav({ orgId }: { orgId: string }) {
   const isActive = useActive();
   return (
-    <nav aria-label="Main" className="grid gap-1">
+    <nav aria-label="Main" className="grid gap-0.5">
       {items(orgId).map(({ href, label, icon: Icon, exact }) => {
         const active = isActive(href, exact);
         return (
@@ -38,13 +38,13 @@ export function SidebarNav({ orgId }: { orgId: string }) {
             href={href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex h-10 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors",
+              "group flex h-9 items-center gap-3 rounded-lg px-2.5 text-sm transition-colors",
               active
-                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
+                ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
+                : "text-muted-foreground hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground",
             )}
           >
-            <Icon className="size-4" aria-hidden />
+            <Icon className={cn("size-[1.0625rem]", active ? "text-foreground" : "text-muted-foreground group-hover:text-foreground")} strokeWidth={active ? 2.25 : 1.75} aria-hidden />
             {label}
           </Link>
         );
@@ -58,7 +58,7 @@ export function BottomNav({ orgId }: { orgId: string }) {
   return (
     <nav
       aria-label="Main"
-      className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden"
     >
       <ul className="mx-auto grid max-w-md grid-cols-6">
         {items(orgId).map(({ href, label, icon: Icon, exact }) => {
@@ -69,11 +69,12 @@ export function BottomNav({ orgId }: { orgId: string }) {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-16 flex-col items-center justify-center gap-1 text-[0.7rem] font-medium",
-                  active ? "text-primary" : "text-muted-foreground",
+                  "relative flex h-16 flex-col items-center justify-center gap-1 text-[0.6875rem] font-medium transition-colors",
+                  active ? "text-foreground" : "text-muted-foreground",
                 )}
               >
-                <Icon className={cn("size-5", active && "stroke-[2.5]")} aria-hidden />
+                {active && <span aria-hidden className="absolute top-0 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-foreground" />}
+                <Icon className="size-5" strokeWidth={active ? 2.25 : 1.75} aria-hidden />
                 {label}
               </Link>
             </li>

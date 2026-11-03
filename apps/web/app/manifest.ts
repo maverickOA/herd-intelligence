@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Livestock records, pedigrees and breeding checks for your farm.",
     start_url: "/",
     display: "standalone",
-    background_color: "#f7f6f0",
-    theme_color: "#2f6b45",
+    background_color: "#fcfcfc",
+    theme_color: "#1e4731",
     icons: [{ src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" }],
   };
 }

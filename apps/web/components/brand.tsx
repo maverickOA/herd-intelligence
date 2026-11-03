@@ -1,21 +1,30 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+/*
+ * The mark: an H whose uprights curl outward into horns. One stroke weight,
+ * one colour, so it holds up at favicon size and on a printed ear-tag sheet.
+ */
 export function BrandMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 64 64" aria-hidden className={cn("size-8 shrink-0", className)}>
-      <rect width="64" height="64" rx="14" className="fill-primary" />
-      <path d="M32 50V26" strokeWidth="4" strokeLinecap="round" className="stroke-primary-foreground" fill="none" />
-      <path d="M32 30c-9 0-15-6-15-15 9 0 15 6 15 15z" className="fill-primary-foreground/70" />
-      <path d="M32 36c8 0 14-5 14-13-8 0-14 5-14 13z" className="fill-primary-foreground" />
+      <rect width="64" height="64" rx="16" className="fill-brand" />
+      <path
+        d="M23 50V30c0-8-4-13-11-15M41 50V30c0-8 4-13 11-15M23 37h18"
+        fill="none"
+        strokeWidth="5.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="stroke-brand-foreground"
+      />
     </svg>
   );
 }
 
 export function Brand({ href = "/", className }: { href?: string; className?: string }) {
   return (
-    <Link href={href} className={cn("flex items-center gap-2.5 font-semibold tracking-tight", className)}>
-      <BrandMark />
+    <Link href={href} className={cn("flex items-center gap-2.5 font-semibold tracking-[-0.02em]", className)}>
+      <BrandMark className="size-7" />
       <span>Herd Intelligence</span>
     </Link>
   );

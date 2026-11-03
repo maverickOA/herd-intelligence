@@ -47,7 +47,7 @@ export default async function BreedingPage({ params }: PageProps<"/o/[orgId]/bre
             <p>
               Checks use starting values (high risk from {pct(policy.high_band_min)}, restricted from {pct(policy.max_coi)} or for
               parent–offspring and sibling pairings). Have a qualified breeding advisor confirm them.{" "}
-              <Link href={`${base}/policy`} className="font-medium text-primary underline-offset-4 hover:underline">
+              <Link href={`${base}/policy`} className="font-medium underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
                 {ctx.role === "owner" ? "Review the policy" : "See the policy"}
               </Link>
             </p>
@@ -141,7 +141,7 @@ export default async function BreedingPage({ params }: PageProps<"/o/[orgId]/bre
 function Action({ href, icon: Icon, title, text }: { href: string; icon: React.ElementType; title: string; text: string }) {
   return (
     <Link href={href} className="flex min-h-24 flex-col justify-between gap-2 rounded-xl border bg-card p-3 hover:bg-accent">
-      <Icon className="size-5 text-primary" aria-hidden />
+      <Icon className="size-5 text-muted-foreground" aria-hidden />
       <span>
         <span className="block text-sm font-medium">{title}</span>
         <span className="block text-xs text-muted-foreground">{text}</span>
@@ -153,13 +153,13 @@ function Action({ href, icon: Icon, title, text }: { href: string; icon: React.E
 function Section({ title, empty, count, children }: { title: string; empty: string; count: number; children: React.ReactNode }) {
   return (
     <section className="mt-8">
-      <h2 className="mb-3 text-lg font-semibold">{title}</h2>
+      <h2 className="mb-3 text-[0.9375rem] font-semibold">{title}</h2>
       {count === 0 ? (
         <Card>
           <CardContent className="py-6 text-center text-sm text-muted-foreground">{empty}</CardContent>
         </Card>
       ) : (
-        <ul className="grid gap-2">{children}</ul>
+        <ul className="rows grid">{children}</ul>
       )}
     </section>
   );

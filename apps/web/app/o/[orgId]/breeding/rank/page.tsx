@@ -96,7 +96,7 @@ export default async function RankPage({ params, searchParams }: PageProps<"/o/[
                         <ClassBadge value={r.classification.code} possible={r.classification.possible} />
                         <Link
                           href={`${base}/check?doe=${result.doeId}&buck=${r.buckId}`}
-                          className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                          className="text-sm font-medium underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground"
                         >
                           Full check
                         </Link>

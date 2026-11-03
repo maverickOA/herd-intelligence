@@ -6,14 +6,14 @@ import { cn } from "@/lib/utils";
 /*
  * Classification colours: restricted and high in the warning-red family,
  * insufficient as a neutral "unknown" (never green), elevated amber, low the
- * brand green. The icon and words carry the meaning, not colour alone.
+ * success green. The icon and words carry the meaning, not colour alone.
  */
 const TONE: Record<Enums<"breeding_class">, string> = {
   restricted: "border-destructive/40 bg-destructive/10 text-destructive",
   high: "border-destructive/30 bg-destructive/5 text-destructive",
   insufficient: "border-border bg-muted text-foreground",
   elevated: "border-warning/50 bg-warning/15 text-foreground",
-  low: "border-primary/30 bg-primary/10 text-primary",
+  low: "border-success/30 bg-success/10 text-success",
 };
 
 const ICON = {

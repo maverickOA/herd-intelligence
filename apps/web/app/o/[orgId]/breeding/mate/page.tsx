@@ -33,7 +33,7 @@ export default async function MatePage({ params, searchParams }: PageProps<"/o/[
           ) : bucks.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               There are no bucks to choose.{" "}
-              <Link href={`/o/${orgId}/herd/new`} className="font-medium text-primary underline-offset-4 hover:underline">
+              <Link href={`/o/${orgId}/herd/new`} className="font-medium underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
                 Register a buck
               </Link>
             </p>

@@ -44,7 +44,7 @@ export function PedigreeTree({ orgId, nodes, generations = 3 }: { orgId: string;
                       n.hidden ? (
                         <span className="text-muted-foreground">Not visible to you</span>
                       ) : (
-                        <Link href={`/o/${orgId}/herd/${n.id}`} className="block truncate font-medium text-primary underline-offset-4 hover:underline">
+                        <Link href={`/o/${orgId}/herd/${n.id}`} className="block truncate font-medium underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
                           {n.label}
                         </Link>
                       )

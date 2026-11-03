@@ -44,7 +44,7 @@ export function FormMessage({ state }: { state: ActionState }) {
   if (state.ok && state.message) {
     return (
       <Alert role="status">
-        <CheckCircle2 aria-hidden className="text-primary" />
+        <CheckCircle2 aria-hidden className="text-success" />
         <AlertDescription>{state.message}</AlertDescription>
       </Alert>
     );
